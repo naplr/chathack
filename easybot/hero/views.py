@@ -11,6 +11,9 @@ import io
 from django.core import serializers
 from django.utils.encoding import force_text
 from django.core.serializers.json import DjangoJSONEncoder
+from libs.chatai.chatai import ChatAi
+
+chatai = ChatAi('mock', '1584bot')
 
 
 def bot_list(request):
@@ -102,30 +105,28 @@ def setup_add_intent(request, bot_pk):
         return render(request, 'hero/intent_add.html', {'bot': Bot.objects.get(pk=bot_pk)})
 
 
-class LazyEncoder(DjangoJSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, uuid.UUID):
-            return force_text(obj)
-        return super(LazyEncoder, self).default(obj)
-
-
 @csrf_exempt
 def accept_intent(request):
     # IN: intent name, bot ID
     # OUT: intent's entity
 
     if request.method == 'POST':
-        intent_name = json.loads(request.body.decode("utf-8"))['intent_name']
+        data = json.loads(request.body.decode("utf-8"))
+        intent_name = data['intent_name']
+        msg = data['msg']
+
         intent = Intent.objects.get(name=intent_name)
-        entities = list(Entity.objects.filter(intent=intent).values('pk', 'text'))
-        for entity in entities:
-            entity['pk'] = str(entity['pk'])
-        return JsonResponse(entities, safe=False)
-    else:  # test
-        entities = list(Entity.objects.all().values('pk', 'text'))
-        for entity in entities:
-            entity['pk'] = str(entity['pk'])
-        return JsonResponse(entities, safe=False)
+        entities = list(Entity.objects.filter(intent=intent).values('text'))
+
+        resp = {}
+        for e in entities:
+            text, precision = chatai.get_entity(msg, e.text)
+            resp[e.text] = text   
+
+        return JsonResponse(resp, safe=False)
+
+    else:  # test. Dont' use it!
+        print("Shuldn't be here")
 
 
 @csrf_exempt

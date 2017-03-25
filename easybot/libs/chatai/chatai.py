@@ -18,8 +18,11 @@ class ChatAi:
         '''
         return self.client.get_intent(msg)
 
-    def get_entity(self, msg, entity_type):
-        return self.client.get_entity(msg, entity_type)
+    def get_entity(self, msg, entity_name):
+        '''
+        return (substring_of_entity, precision)
+        '''
+        return self.client.get_entity(msg, entity_name)
 
     def create_intent(self, intent_name):
         return self.client.create_intent(intent_name)
