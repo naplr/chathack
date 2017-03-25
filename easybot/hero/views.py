@@ -115,7 +115,7 @@ def accept_intent(request):
     # OUT: intent's entity
 
     if request.method == 'POST':
-        intent_name = json.loads(request.body.decode("utf-8"))['intentID']
+        intent_name = json.loads(request.body.decode("utf-8"))['intent_name']
         intent = Intent.objects.get(name=intent_name)
         entities = list(Entity.objects.filter(intent=intent).values('pk', 'text'))
         for entity in entities:
@@ -134,7 +134,7 @@ def reject_intent(request):
     # OUT: all intent belonging to BOT
 
     if request.method == 'POST':
-        intent_name = uuid.UUID(json.loads(request.body.decode("utf-8"))['intentID'])
+        intent_name = uuid.UUID(json.loads(request.body.decode("utf-8"))['intent_name'])
         bot = Bot.objects.get(intent__pk=intent_name)
         intents = list(Intent.objects.filter(bot=bot).values('pk', 'text'))
         for intent in intents:

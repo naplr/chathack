@@ -22,10 +22,12 @@
 
 
 
+
     </script>
 
     <style type="text/css">
        body { background-color:rgb(235,235,235); }
+
 
 
 
@@ -91,12 +93,80 @@
     <hr>
 
 </div>
-    <script>
+<script>
 
-
-        function test (mainCount) {
-             document.getElementById("main"+mainCount).innerHTML = "";
+        function test (txt) {
+            alert(txt);
         };
+
+
+        function acceptMsg (intentText, mainCount) {
+             console.log(intentText);
+             console.log(mainCount);
+
+              $.ajax({
+                    type: 'POST',
+                    url: "127.0.0.1:8000/admin/api/accept-intent/",
+                    data:  JSON.stringify({
+                        "intent_name": intentText,
+                    }),
+                    success: function(data, status){
+                        console.log(data)
+                    },
+                    error: function(){
+                        console.log(data)
+                    }
+                });
+
+
+
+             document.getElementById("selectEntity"+mainCount).innerHTML =
+
+             `
+             <label>require entity</label>
+            <div class="form-group">
+                <label><input class="form-control" type="text" value="">taxi location</label>
+                <label><input class="form-control" type="text" value="">Option 2</label>
+                <label><input class="form-control" type="text" value="">Option 2</label>
+            </div>
+            <button type="button" class="btn btn-primary" onclick=acceptEntity("`+intentText+`","`+mainCount+`")>Continue</button>
+            `;
+        };
+
+
+        function acceptEntity (intentText,mainCount) {
+            console.log("response"+mainCount);
+            document.getElementById("response"+mainCount).innerHTML =
+            `<div class="row">
+                <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
+                    <div class="form-group">
+                        <label>response</label>
+                        <input class="form-control" type="text" value="`+intentText+`">
+                    </div>
+                    <div class="form-group">
+                        <label>suggest response</label>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1235235
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 2124124
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline disabled">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 31414
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        }
+
+
 
         var mainCount = 0;
         // Retrieve Firebase Messaging object.
@@ -106,65 +176,36 @@
             if(snapshot.val()!=null){
 
 
-
                 console.log(snapshot.val());
                 console.log(mainCount);
-
 
                 document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
 
                 `<div id="main`+mainCount+`">
-                <div onclick=test(`+mainCount+`)>TEST</div>
-                <div class="row">
-                    <div class="col-xs-8" style="background-color:white">
-                        <form>
-                            <div class="form-group">
-                                <label>user says</label>
-                                <input class="form-control" type="text" value="`+snapshot.val().text+`">
-                            </div>
-                            <div class="form-group">
-                                <label>intent</label>
-                                <input class="form-control" type="text" value="`+snapshot.val().intent.precision+`">
-                                <button type="submit" class="btn btn-primary">Accept</button>
-                                <button type="submit" class="btn btn-danger">Reject</button>
-                            </div>
-                            <label>require entity</label>
-                            <div class="form-group">
-                                <label><input class="form-control" type="text" value="">taxi location</label>
-                                <label><input class="form-control" type="text" value="">Option 2</label>
-                                <label><input class="form-control" type="text" value="">Option 2</label>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <div onclick=test("`+snapshot.val().text+`")>TEST</div>
+                    <div class="row">
+                        <div class="col-xs-8" style="background-color:white">
+                            <form>
+                                <div class="form-group">
+                                    <label>user says</label>
+                                    <input class="form-control" type="text" value="`+snapshot.val().text+`">
+                                </div>
+                                <div class="form-group">
+                                    <label>prevision = `+snapshot.val().intent.precision+`</label>
+                                    <input class="form-control" type="text" value="`+snapshot.val().intent.text+`">
+                                    <button type="button" class="btn btn-primary" onclick=acceptMsg("`+snapshot.val().intent.text+`","`+mainCount+`")>Accept</button>
+                                    <button class="btn btn-danger">Reject</button>
+                                </div>
+                                <div id="selectEntity`+mainCount+`"></div>
 
-                <div class="row">
-                    <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
-                        <div class="form-group">
-                            <label>response to</label>
-                            <input class="form-control" type="text" value="`+snapshot.val().intent.text+`">
-                        </div>
-                        <div class="form-group">
-                            <label>suggest response</label>
-                            <div class="form-check form-check-inline">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1235235
-                                </label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 2124124
-                                </label>
-                            </div>
-                            <div class="form-check form-check-inline disabled">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 31414
-                                </label>
-                            </div>
+                            </form>
                         </div>
                     </div>
-                </div>
-                <hr>
+
+                    <div id="response`+mainCount+`"></div>
+
+
+                    <hr>
                 </div>
                 `;
 
@@ -174,6 +215,7 @@
         })
 
 
-    </script>
+
+</script>
 </body>
 </html>
