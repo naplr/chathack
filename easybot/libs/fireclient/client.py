@@ -10,7 +10,12 @@ config = {
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
-db.child("userid").update({
-    "text": "Hi guys",
-    "intent": "hello_action"
-})
+def push_msg(botname, msg, intent_name, intent_precision):
+    db.child(botname).update({
+        'text': msg,
+        'intent': {
+            'text': intent_name,
+            'precision': intent_precision
+        }
+    })
+

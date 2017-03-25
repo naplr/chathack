@@ -45,17 +45,6 @@ def receivedMessage(event):
         sendTextMessage(senderID, "Message with attachment received")
 
 
-def manifest(request):
-    return JsonResponse({"gcm_sender_id": "103953800507"})
-
-
-def fms(request):
-    resp = render(request, 'hero/fms.js')
-    resp['Content-Type'] = 'application/javascript'
-    return resp
-
-
-
 @csrf_exempt
 def webhook(request):
     try:
