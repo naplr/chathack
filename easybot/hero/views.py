@@ -128,5 +128,9 @@ def reject_intent(request):
         return JsonResponse(qs_json, safe=False)
 
 
+def chat_test(request):
+    return render(request, 'hero/chat_test.html')
+
+
 def chat(request, bot_pk):
     return HttpResponse()

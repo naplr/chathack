@@ -1,0 +1,31 @@
+<html>
+
+<head>
+    <script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBbLf8k4NKQVXfjMg--POKkiQjHi2yuTxc",
+            authDomain: "chathack-db0fb.firebaseapp.com",
+            databaseURL: "https://chathack-db0fb.firebaseio.com",
+            storageBucket: "chathack-db0fb.appspot.com",
+            messagingSenderId: "1039260391551"
+        };
+        firebase.initializeApp(config);
+    </script>
+</head>
+
+<body>
+    <h1 id="test_text">Hello World</h1>
+    <script>
+        // Retrieve Firebase Messaging object.
+        const database = firebase.database();
+        var msg = database.ref('userid');
+        msg.on('value', function(snapshot) {
+            console.log(snapshot.val());
+            document.getElementById("test_text").innerHTML = snapshot.val().text;
+        })
+    </script>
+</body>
+
+</html>
