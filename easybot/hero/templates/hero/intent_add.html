@@ -1,68 +1,129 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add intent</title>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-</head>
-<body>
-<h2>Add intent for {{bot.name}}</h2>
+{% extends 'hero/layout.html' %}
+{% block title %}
+SETTING MODE
+{% endblock %}
 
+{% block content %}
 <form action="" method="post">
     {% csrf_token %}
-    <input type="text" placeholder="Intent" name="intent" required="">
-    <br>
-    <input type="text" placeholder="Entity name" name="e1">
-    <input type="text" placeholder="Request response" name="e1r">
-    <select name="e1t">
-        <option value="text">Text</option>
-        <option value="carousel">Carousel</option>
-        <option value="Location">Location</option>
-    </select>
-    <br>
-    <input type="text" placeholder="Entity name" name="e2">
-    <input type="text" placeholder="Request response" name="e2r">
-    <select name="e2t">
-        <option value="text">Text</option>
-        <option value="carousel">Carousel</option>
-        <option value="Location">Location</option>
 
-    </select>
-    <br>
-    <input type="text" placeholder="Entity name" name="e3">
-    <input type="text" placeholder="Request response" name="e3r">
-    <select name="e3t">
-        <option value="text">Text</option>
-        <option value="carousel">Carousel</option>
-        <option value="Location">Location</option>
-    </select>
-    <br>
-    <input type="text" placeholder="Entity name" name="e4">
-    <input type="text" placeholder="Request response" name="e4r">
-    <select name="e4t">
-        <option value="text">Text</option>
-        <option value="carousel">Carousel</option>
-        <option value="Location">Location</option>
-    </select>
-    <br>
-    <input type="text" placeholder="Entity name" name="e5">
-    <input type="text" placeholder="Request response" name="e5r">
-    <select name="e5t">
-        <option value="text">Text</option>
-        <option value="carousel">Carousel</option>
-        <option value="Location">Location</option>
-    </select>
-    <br>
-    <input type="text" placeholder="Response" name="response" required="">
-    <select name="response_type">
-        <option value="text">Text</option>
-        <option value="carousel">Carousel</option>
-        <option value="Location">Location</option>
-    </select>
-    <br>
-    <input type="submit" value="Save"/>
+    <div class="ibox float-e-margins" style="margin-bottom:0px">
+
+        <div class="ibox-title">
+            <div style="display:inline;float:left;margin-right:20px"><h2>Intent</h2></div>
+            <div class="input-group" style="width:60%;display:inline">
+                <input type="text" placeholder="Intent" name="intent" class="form-control" style="width:60%;display:inline">
+                <span class="input-group-btn" style="width:60%;display:inline">
+                            <button type="button" class="btn btn-default"><i class="fa fa-bars"></i>
+                        </button>
+                        </span>
+            </div>
+            <div class="ibox-tools" style="float:right">
+
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-wrench"></i>
+                </a>
+
+                <a class="close-link">
+                    <i class="fa fa-times"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ibox-content">
+        <div class="flot-chart">
+
+            <div class="col-xs-5 col-xs-offset-1">
+                <div class="input-group">
+                    <input type="text" placeholder="Entity name" name="e1" class="form-control">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default"><i class="fa fa-bars"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-xs-5">
+                <div class="form-group form-inline">
+                    <input type="text" placeholder="Request response" name="e1r" class="form-control" style="width:70%">
+                    <select name="e1t" class="form-control" style="width:29%">
+                        <option value="text">Text</option>
+                        <option value="carousel">Carousel</option>
+                        <option value="Location">Location</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-xs-5 col-xs-offset-1">
+                <div class="input-group">
+                    <input type="text" placeholder="Entity name" name="e2" class="form-control">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default"><i class="fa fa-bars"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-xs-5">
+                <div class="form-group form-inline">
+                    <input type="text" placeholder="Request response" name="e2r" class="form-control" style="width:70%">
+                    <select name="e2t" class="form-control" style="width:29%">
+                        <option value="text">Text</option>
+                        <option value="carousel">Carousel</option>
+                        <option value="Location">Location</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="col-xs-5 col-xs-offset-1">
+                <div class="input-group">
+                    <input type="text" placeholder="Entity name" name="e3" class="form-control">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default"><i class="fa fa-bars"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-xs-5">
+                <div class="form-group form-inline">
+                    <input type="text" placeholder="Request response" name="e3r" class="form-control" style="width:70%">
+                    <select name="e3t" class="form-control" style="width:29%">
+                        <option value="text">Text</option>
+                        <option value="carousel">Carousel</option>
+                        <option value="Location">Location</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ibox-footer" style="height:56px">
+        <div class="form-group form-inline"><label class="col-sm-2 control-label" style="margin-top:9px">Intent response</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" placeholder="Response" name="response" required="" style="width:90%">
+                <select name="response_type" class="form-control" style="width:9%">
+                    <option value="text">Text</option>
+                    <option value="carousel">Carousel</option>
+                    <option value="Location">Location</option>
+                </select>
+            </div>
+        </div>
+
+
+    </div>
+    <div style="float:right;margin-top:10px">
+        <input type="button" class="btn" value="Cancel"/>
+        <input type="submit" class="btn btn-primary" value="Save changes"/>
+    </div>
+
+
 </form>
-</body>
-</html>
+
+
+{% endblock %}

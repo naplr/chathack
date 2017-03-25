@@ -24,7 +24,7 @@ def bot_add(request):
     if request.method == 'POST':
         form = request.POST
         bot = Bot.objects.create(name=form['name'], api_key=form['apikey'])
-        return HttpResponseRedirect('/admin/')
+        return HttpResponseRedirect('/admin/main/')
     return render(request, 'hero/bot_add.html')
 
 

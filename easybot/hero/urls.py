@@ -15,6 +15,6 @@ urlpatterns = [
     url(r'^api/accept-entities/', views.accept_entities),
     url(r'^api/add-new-intent', views.add_new_intent),
     url(r'^chat-test/$', views.chat_test),
-    url(r'^', views.bot_list),
+    url(r'^main/$', views.bot_list),
 
 ]
