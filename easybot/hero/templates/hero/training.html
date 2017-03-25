@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Training Mode</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+    <script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBbLf8k4NKQVXfjMg--POKkiQjHi2yuTxc",
+            authDomain: "chathack-db0fb.firebaseapp.com",
+            databaseURL: "https://chathack-db0fb.firebaseio.com",
+            storageBucket: "chathack-db0fb.appspot.com",
+            messagingSenderId: "1039260391551"
+        };
+        firebase.initializeApp(config);
+
+
+
+    </script>
+
+    <style type="text/css">
+       body { background-color:rgb(235,235,235); }
+
+
+
+
+
+    </style>
+
+<body>
+<div class="container">
+
+    <div class="row">
+        <div class="col-xs-8" style="background-color:white">
+            <form>
+                <div class="form-group">
+                    <label>user says</label>
+                    <input class="form-control" type="text" value="blablabla">
+                </div>
+                <div class="form-group">
+                    <label>intent</label>
+                    <input class="form-control" type="text" value="94%">
+                    <button type="submit" class="btn btn-primary">Accept</button>
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </div>
+                <label>require entity</label>
+                <div class="form-group">
+                    <label><input class="form-control" type="text" value="">taxi location</label>
+                    <label><input class="form-control" type="text" value="">Option 2</label>
+                    <label><input class="form-control" type="text" value="">Option 2</label>
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
+            <div class="form-group">
+                <label>response to</label>
+                <input class="form-control" type="text" value="blablabla">
+            </div>
+            <div class="form-group">
+                <label>suggest response</label>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1235235
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 2124124
+                    </label>
+                </div>
+                <div class="form-check form-check-inline disabled">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 31414
+                    </label>
+                </div>
+            </div>
+        </div>
+        <hr>
+
+    </div>
+
+</div>
+    <script>
+        // Retrieve Firebase Messaging object.
+        const database = firebase.database();
+        var msg = database.ref('userid');
+        msg.on('value', function(snapshot) {
+            console.log(snapshot.val());
+            document.getElementById("test_text").innerHTML = snapshot.val().text;
+        })
+    </script>
+</body>
+</html>

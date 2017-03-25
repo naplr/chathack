@@ -9,6 +9,8 @@ from .models import *
 import csv
 import io
 from django.core import serializers
+from django.utils.encoding import force_text
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def bot_list(request):
@@ -101,6 +103,13 @@ def setup_add_intent(request, bot_pk):
         return render(request, 'hero/intent_add.html', {'bot': Bot.objects.get(pk=bot_pk)})
 
 
+class LazyEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, uuid.UUID):
+            return force_text(obj)
+        return super(LazyEncoder, self).default(obj)
+
+
 @csrf_exempt
 def accept_intent(request):
     # IN: intentID
@@ -108,10 +117,17 @@ def accept_intent(request):
 
     if request.method == 'POST':
         intentID = uuid.UUID(json.loads(request.body.decode("utf-8"))['intentID'])
+        print(type(intentID))
         intent = Intent.objects.get(pk=intentID)
-        entities = Entity.objects.filter(intent=intent)
-        qs_json = serializers.serialize('json', entities)
-        return JsonResponse(qs_json, safe=False)
+        entities = list(Entity.objects.filter(intent=intent).values('pk', 'text'))
+        for entity in entities:
+            entity['pk'] = str(entity['pk'])
+        return JsonResponse(entities, safe=False)
+    else:  # test
+        entities = list(Entity.objects.all().values('pk', 'text'))
+        for entity in entities:
+            entity['pk'] = str(entity['pk'])
+        return JsonResponse(entities, safe=False)
 
 
 @csrf_exempt
@@ -122,15 +138,17 @@ def reject_intent(request):
     if request.method == 'POST':
         intentID = uuid.UUID(json.loads(request.body.decode("utf-8"))['intentID'])
         bot = Bot.objects.get(intent__pk=intentID)
-
-        intents = Intent.objects.filter(bot=bot)
-        qs_json = serializers.serialize('json', intents)
-        return JsonResponse(qs_json, safe=False)
+        intents = list(Intent.objects.filter(bot=bot).values('pk', 'text'))
+        for intent in intents:
+            intent['pk'] = str(intent['pk'])
+        return JsonResponse(intents, safe=False)
 
 
 def chat_test(request):
     return render(request, 'hero/chat_test.html')
 
 
-def chat(request, bot_pk):
-    return HttpResponse()
+def training(request, bot_pk):
+    bot = Bot.objects.get(pk=bot_pk)
+
+    return render(request, 'hero/training.html', {'bot': bot})
