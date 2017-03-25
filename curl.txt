@@ -1,0 +1,1 @@
+curl -H "Content-Type: application/json" -X POST -d '{"object": "page", "entry": [{"time": "1490346670214", "messaging": [{"sender": {"id": "1410211775715975"}, "message": {"mid": "mid.$cAADqs8zFLo5hMNqlhFa_5Vc-QwJH", "seq": "710", "text": "hello 8"}, "timestamp": "1490346663300", "recipient": {"id": "193789964445107"}}], "id": "193789964445107"}]}' http://localhost:8000/webhook
