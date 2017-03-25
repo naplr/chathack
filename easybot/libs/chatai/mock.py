@@ -14,9 +14,6 @@ class MockChatAi:
     def create_entity(self, entity_name):
         pass
 
-    def add_entity_to_intent(self, entity_name, intent_name):
-        pass
-
 
 
     

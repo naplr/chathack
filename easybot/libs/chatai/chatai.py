@@ -24,8 +24,6 @@ class ChatAi:
     def create_entity(self, entity_name):
         self.client.create_entity(entity_name)
 
-    def add_entity_to_intent(self, entity_name, intent_name):
-        self.client.add_entity_to_intent(entity_name, intent_name)
 
 
 
