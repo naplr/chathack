@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'webhook'
+    'django_extensions',
+    'webhook',
+    'hero'
+    ''
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select bot</title>
+</head>
+<body>
+
+<h2>All available bots</h2>
+
+{% for b in bot_list %}
+    <p>
+        <a href="bot/{{b.pk}}/">{{b.name}}</a>
+    </p>
+{% endfor %}
+
+<hr>
+<a href="bot-add/">Add bot</a>
+</body>
+</html>

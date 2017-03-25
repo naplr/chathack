@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main page</title>
+</head>
+<body>
+
+<h2>{{bot.name}} setup</h2>
+
+{% for intent in intent_list %}
+<p><b>intent: </b>{{ intent.text }}</p>
+
+{% for e in intent.entity.all %}
+<div style="margin-left:20px">
+    <p>
+        <b>entity name: </b>{{ e.text }}<br>
+        <b>entity request: </b>{{ e.response.text }}<br>
+        <b>response type: </b>{{ e.response.type }}<br>
+    </p>
+</div>
+{% endfor %}
+<p><b>response: </b>{{ intent.response }}</p>
+
+<!--<a href="edit-intent/{{ intent.id }}/"> EDIT </a>-->
+<hr>
+{% endfor %}
+
+<a href="add-intent/"> Add intent</a>
+</body>
+</html>

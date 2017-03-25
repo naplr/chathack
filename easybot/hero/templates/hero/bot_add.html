@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add bot</title>
+</head>
+<body>
+<h2>Add bot</h2>
+<form action="" method="post">
+    {% csrf_token %}
+    <input type="text" placeholder="Bot name" name="name" required>
+    <input type="text" placeholder="API key" name="apikey">
+    <input type="submit" value="Save"/>
+</form>
+</body>
+</html>
