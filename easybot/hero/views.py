@@ -41,7 +41,6 @@ def setup(request, bot_pk):
                 entity_text = row['e' + str(num)]
                 entity_response_text = row['e' + str(num) + 'r']
                 entity_response_type = row['e' + str(num) + 't']
-                print(entity_response_type)
                 if '' not in [entity_text, entity_response_text, entity_response_type]:
                     entity_response = Response.objects.create(text=entity_response_text, type=entity_response_type)
                     entity_obj = Entity.objects.create(text=entity_text, response=entity_response)
@@ -112,13 +111,12 @@ class LazyEncoder(DjangoJSONEncoder):
 
 @csrf_exempt
 def accept_intent(request):
-    # IN: intentID
+    # IN: intent name, bot ID
     # OUT: intent's entity
 
     if request.method == 'POST':
-        intentID = uuid.UUID(json.loads(request.body.decode("utf-8"))['intentID'])
-        print(type(intentID))
-        intent = Intent.objects.get(pk=intentID)
+        intent_name = json.loads(request.body.decode("utf-8"))['intentID']
+        intent = Intent.objects.get(name=intent_name)
         entities = list(Entity.objects.filter(intent=intent).values('pk', 'text'))
         for entity in entities:
             entity['pk'] = str(entity['pk'])
@@ -132,12 +130,12 @@ def accept_intent(request):
 
 @csrf_exempt
 def reject_intent(request):
-    # IN: intentID
+    # IN: intent name, bot ID
     # OUT: all intent belonging to BOT
 
     if request.method == 'POST':
-        intentID = uuid.UUID(json.loads(request.body.decode("utf-8"))['intentID'])
-        bot = Bot.objects.get(intent__pk=intentID)
+        intent_name = uuid.UUID(json.loads(request.body.decode("utf-8"))['intentID'])
+        bot = Bot.objects.get(intent__pk=intent_name)
         intents = list(Intent.objects.filter(bot=bot).values('pk', 'text'))
         for intent in intents:
             intent['pk'] = str(intent['pk'])

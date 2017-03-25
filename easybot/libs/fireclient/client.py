@@ -1,5 +1,5 @@
 import pyrebase
-
+import sys
 config = {
     "apiKey": "AIzaSyBbLf8k4NKQVXfjMg--POKkiQjHi2yuTxc",
     "authDomain": "chathack-db0fb.firebaseapp.com",
@@ -19,3 +19,5 @@ def push_msg(botname, msg, intent_name, intent_precision):
         }
     })
 
+if __name__ == '__main__':
+    push_msg(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])

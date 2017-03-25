@@ -9,6 +9,7 @@ class Bot(models.Model):
     name = models.CharField(max_length=100, default='')
     api_key = models.CharField(max_length=500, default='')
 
+
 class Response(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(max_length=100, default='')
@@ -34,6 +35,9 @@ class Intent(models.Model):
     bot = models.ForeignKey(Bot, related_name='intent')
     entity = models.ManyToManyField(Entity, related_name='intent')
     response = models.ForeignKey(Response, related_name='intent')
+
+    class Meta:
+        unique_together = ('text', 'bot')
 
     def __str__(self):
         return self.text
