@@ -145,6 +145,66 @@ def reject_intent(request):
 
 
 @csrf_exempt
+def add_new_intent(request):
+    '''
+    We currently cannot add new intent that requires entities.
+    IN: {
+        threadId: 'threadid',
+        msg: "hello people",
+        intent_name: "ask_for_opening_hours",
+        response: "we open from 8 hours"
+    }
+    OUT: {
+        threadId: 'threadId',
+        response: "we open from 8 hours"
+    } 
+    '''
+    if request.method == 'POST':
+        data = json.loads(request.body.decode("utf-8"))
+        threadid = data['threadId']
+        msg = data['msg']
+        entities = data['entities']
+            
+        thread = Thread.objects.get(id=threadid)
+        thread_entities = json.load(thread.entities)
+
+        if len(entities) == 1:
+            # There will be no empty value here
+            entity_name = entities.keys()[0]
+            thread_entities[entity_name] = entities[entity_name]
+        else:
+            # We assume that there will be all entities here
+            # This should be only the case after accept intent only
+            # Update thread with all entities (not found entities will be blank)
+            thread_entities = entities
+        
+        thread.entities = json.dump(thread_entities)
+        thread.save()
+
+        missing_entities = [k for k in thread_entities if not entities[k]]
+        # Create response to ask for an entity
+        if len(missing_entities) > 0:
+            entity = Entity.objects.get(text=missing_entities[0])
+            response = entity.response
+            data = {
+                'threadId': threadid,
+                'response': response.text,
+                'entity': entity.text
+            }
+
+            return JsonResponse(data)
+        else:
+        # We have all required entities
+            response = thread.intent.response.text
+            data = {
+                'threadId': threadid,
+                'response': response
+            }
+    else:  # test. Dont' use it!
+        print("Shouldn't be here")
+
+
+@csrf_exempt
 def accept_entities(request):
     '''
     IN: {
