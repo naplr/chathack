@@ -52,7 +52,7 @@
             alert(txt);
         };
 
-        function acceptMsg (intentText, mainCount, msg) {
+        function acceptMsg (intentText, mainCount, msg, threadId) {
              console.log(intentText);
              console.log(mainCount);
 
@@ -79,7 +79,7 @@
 
                         document.getElementById("selectEntity"+mainCount).innerHTML += `
                             </div>
-                            <button type="button" class="btn btn-primary" onclick=acceptEntity("${intentText}","${mainCount}","${msg}")>Continue</button>
+                            <button type="button" class="btn btn-primary" onclick=acceptEntity("${intentText}","${mainCount}","${msg}","${threadId}")>Continue</button>
                         `;
 
                     },
@@ -94,7 +94,7 @@
         };
 
 
-        function acceptEntity (intentText,mainCount,msg) {
+        function acceptEntity (intentText,mainCount,msg,threadId) {
             var s = $(`#selectEntity${mainCount} > [name='entityLabel']`);
             var entities = []; // create an empty array
 
@@ -108,35 +108,19 @@
             }
             console.log(entities);
 
-          $.ajax({
+            $.ajax({
                 type: 'POST',
                 url: "http://127.0.0.1:8000/admin/api/accept-entities/",
                 data:  JSON.stringify({
-                    "intent_name": intentText,
-                    "bot_name": "{{bot.name}}",
-                    "msg": msg
+                    "entities": entities,
+                    "msg": msg,
+                    "threadId": threadId
                 }),
                 success: function(data, status){
                     console.log(data);
-                    document.getElementById("selectEntity"+mainCount).innerHTML =
-                    `
-                    <label>require entity</label>
-                    <div class="form-group">`;
-
-                    for(var index in data) {
-                        document.getElementById("selectEntity"+mainCount).innerHTML += `
-                            <label name="entityLabel"><input class="form-control" type="text" value="${data[index]}">${index}</label>
-                        `;
-                    }
-
-                    document.getElementById("selectEntity"+mainCount).innerHTML += `
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick=acceptEntity("${intentText}","${mainCount}","${msg}")>Continue</button>
-                    `;
-
                 },
                 error: function(){
-                    console.log('error')
+                    console.log('error');
                 }
             });
 
@@ -197,7 +181,7 @@
                                 <div class="form-group">
                                     <label>prevision = `+snapshot.val().intent.precision+`</label>
                                     <input class="form-control" type="text" value="`+snapshot.val().intent.text+`">
-                                    <button type="button" class="btn btn-primary" onclick=acceptMsg("${snapshot.val().intent.text}","${mainCount}","${String(snapshot.val().text)}")>Accept</button>
+                                    <button type="button" class="btn btn-primary" onclick=acceptMsg("${snapshot.val().intent.text}","${mainCount}","${String(snapshot.val().text)}","${snapshot.val().threadId}")>Accept</button>
                                     <button class="btn btn-danger">Reject</button>
                                 </div>
                             </form>
