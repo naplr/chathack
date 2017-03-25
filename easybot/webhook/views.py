@@ -9,11 +9,11 @@ from libs.chatai.chatai import ChatAi
 from libs.fireclient import client as fireclient
 from hero.models import *
 
-ACCESS_TOKEN = 'EAAD8zs76JyMBAMbMsKZCFum0z6gqGWnz8wmoqcfA2PFP47DvmRqKbtLUqBdhfLapGpvLF3EmDMTlsZBTBNAUxZAHwlh7Gyr7ZAsc9TG0k2laFHc0uY0sneookV59sZAJpKv0NL1RRPZAUqrD05Vy2xjseisrAk81F3mGSZBZCu9BwgZDZD'
 BOTNAME = '1584bot'
 
 def _handle_message_from_fb(event):
-    client = FbClient(ACCESS_TOKEN)
+    # TODO: Add access token
+    client = FbClient()
     chatai = ChatAi('mock', BOTNAME)
     rid,  msg = client.extract_message_and_recipientid(event)
 
@@ -26,10 +26,11 @@ def _handle_message_from_fb(event):
         thread = Thread.objects.create(customer_rid=rid, intent=intent)
         fireclient.push_msg(BOTNAME, thread.id, msg, intent_name, precision)
 
+        print("rid at creation: {}".format(rid))
+
     # subsequence msg
     else:
         pass
-
 
 
 @csrf_exempt

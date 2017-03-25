@@ -12,8 +12,11 @@ from django.core import serializers
 from django.utils.encoding import force_text
 from django.core.serializers.json import DjangoJSONEncoder
 from libs.chatai.chatai import ChatAi
+from libs.fbclient.client import FbClient
 
 chatai = ChatAi('mock', '1584bot')
+# TODO: Add access token
+fbclient = FbClient()
 
 
 def bot_list(request):
@@ -142,6 +145,41 @@ def reject_intent(request):
         for intent in intents:
             intent['pk'] = str(intent['pk'])
         return JsonResponse(intents, safe=False)
+
+
+@csrf_exempt
+def continue_response(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode("utf-8"))
+        threadid = data['threadId']
+        msg = data['msg']
+
+        thread = Thread.objects.get(id=threadid)
+        rid = thread.customer_rid
+
+        fbclient.send_message(rid, msg)
+
+        data = {
+            'threadId': threadid,
+            'response': msg,
+        }
+        return JsonResponse(data)
+    else:  
+        return HttpResponseNotAllowed(['POST'])
+
+
+@csrf_exempt
+def finish_conversation(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode("utf-8"))
+        threadid = data['threadId']
+
+        thread = Thread.objects.get(id=threadid)
+        thread.delete()
+
+        return HttpResponse(status=200)
+    else:  
+        return HttpResponseNotAllowed(['POST'])
 
 
 @csrf_exempt

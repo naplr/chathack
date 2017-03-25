@@ -65,24 +65,45 @@
                 });
         };
 
+        function continueResponse(threadId, msg) {
+            $.ajax({
+                type: 'POST',
+                url: "http://127.0.0.1:8888/admin/api/continue-response/",
+                data:  JSON.stringify({
+                    "msg": msg,
+                    "threadId": threadId
+                }),
+                success: function(data, status){
+                    console.log(data);
+                },
+                error: function(){
+                    console.log('error');
+                }
+            });
+        }
 
-        function acceptEntity (intentText,intentCount,msg,threadId) {
+        function acceptEntity (intentText, intentCount, msg, threadId) {
             var s = $(`#selectEntity${intentCount} > [name='entityLabel']`);
             var entities = {}; // create an empty array
 
+            const randid = Math.random();
             function addResponse(responseText) {
-            document.getElementById("response"+intentCount).innerHTML =
-            `<div class="row">
-                <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
-                    <div class="form-group">
-                        <label>Response</label>
-                        <input class="form-control" type="text" value="${responseText}">
-                    </div>
-                    <div class="form-group">
-                        <button class="btn btn-primary">Continue</button>
-                    </div>
-                </div>
-            </div>`;
+                document.getElementById("response"+intentCount).innerHTML =
+                    `<div class="row">
+                        <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
+                            <div class="form-group">
+                                <label>Response</label>
+                                <input class="form-control" type="text" value="${responseText}">
+                            </div>
+                            <div class="form-group">
+                                <button id=${randid} class="btn btn-primary")>
+                                    Continue
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+
+                $(`#${randid}`).click(continueResponse(threadId, responseText));
             }
 
             // get form data
