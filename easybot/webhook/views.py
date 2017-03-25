@@ -21,8 +21,9 @@ def _handle_message_from_fb(event):
     new_thread = True
     if new_thread:
         intent_name, precision = chatai.get_intent(msg)
-        thread = Therad.objects.create(customer_rid=rid, intent_text=intent_name)
 
+        intent = Intent.objects.get(text=intent_name)
+        thread = Thread.objects.create(customer_rid=rid, intent=intent)
         fireclient.push_msg(BOTNAME, thread.id, msg, intent_name, precision)
 
     # subsequence msg
