@@ -27,7 +27,7 @@ def bot_add(request):
     if request.method == 'POST':
         form = request.POST
         bot = Bot.objects.create(name=form['name'], api_key=form['apikey'])
-        return HttpResponseRedirect('/admin/main/')
+        return HttpResponseRedirect('/admin/main')
     return render(request, 'hero/bot_add.html')
 
 
@@ -276,12 +276,15 @@ def accept_entities(request):
                 'entity': entity.text
             }
         else:
-        # We have all required entities
+            # We have all required entities
+            # Do action!
             response = thread.intent.response.text
             data = {
                 'threadId': threadid,
                 'response': response
             }
+
+            thread.delete()
         
         return JsonResponse(data)
     else:  
