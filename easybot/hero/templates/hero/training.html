@@ -6,8 +6,6 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-
     <script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
     <script>
         // Initialize Firebase
@@ -19,42 +17,20 @@
             messagingSenderId: "1039260391551"
         };
         firebase.initializeApp(config);
-
-
-
-
-
-
     </script>
 
     <style type="text/css">
        body { background-color:rgb(235,235,235); }
-
-
-
-
-
-
-
-
     </style>
 
 <body>
 {{bot.name}}
 
 <div class="container" id="main">
-
 </div>
 
 <script>
-
-        function test (txt) {
-            alert(txt);
-        };
-
-        function acceptMsg (intentText, mainCount, msg, threadId) {
-             console.log(intentText);
-             console.log(mainCount);
+        function acceptMsg (intentText, intentCount, msg, threadId) {
 
               $.ajax({
                     type: 'POST',
@@ -66,20 +42,20 @@
                     }),
                     success: function(data, status){
                         console.log(data);
-                        document.getElementById("selectEntity"+mainCount).innerHTML =
+                        document.getElementById("selectEntity"+intentCount).innerHTML =
                         `
                         <label>require entity</label>
                         <div class="form-group">`;
 
                         for(var index in data) {
-                            document.getElementById("selectEntity"+mainCount).innerHTML += `
+                            document.getElementById("selectEntity"+intentCount).innerHTML += `
                                 <label name="entityLabel"><input class="form-control" type="text" value="${data[index]}">${index}</label>
                             `;
                         }
 
-                        document.getElementById("selectEntity"+mainCount).innerHTML += `
+                        document.getElementById("selectEntity"+intentCount).innerHTML += `
                             </div>
-                            <button type="button" class="btn btn-primary" onclick=acceptEntity("${intentText}","${mainCount}","${msg}","${threadId}")>Continue</button>
+                            <button type="button" class="btn btn-primary" onclick=acceptEntity("${intentText}","${intentCount}","${msg}","${threadId}")>Continue</button>
                         `;
 
                     },
@@ -87,27 +63,32 @@
                         console.log('error')
                     }
                 });
-
-
-
-
         };
 
 
-        function acceptEntity (intentText,mainCount,msg,threadId) {
-            var s = $(`#selectEntity${mainCount} > [name='entityLabel']`);
+        function acceptEntity (intentText,intentCount,msg,threadId) {
+            var s = $(`#selectEntity${intentCount} > [name='entityLabel']`);
             var entities = {}; // create an empty array
 
+            function addResponse(responseText) {
+            document.getElementById("response"+intentCount).innerHTML =
+            `<div class="row">
+                <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
+                    <div class="form-group">
+                        <label>Response</label>
+                        <input class="form-control" type="text" value="${responseText}">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary">Continue</button>
+                    </div>
+                </div>
+            </div>`;
+            }
+
             // get form data
-            console.log(s);
             for (var letter of s) {
-                // entities.push({
-                //     key:   letter.innerText,
-                //     value: letter.children[0].value
-                // });
                 entities[letter.innerText] = letter.children[0].value
             }
-            console.log(entities);
 
             $.ajax({
                 type: 'POST',
@@ -119,59 +100,26 @@
                 }),
                 success: function(data, status){
                     console.log(data);
+                    addResponse(data['response'])
                 },
                 error: function(){
                     console.log('error');
                 }
             });
-
-            document.getElementById("response"+mainCount).innerHTML =
-            `<div class="row">
-                <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
-                    <div class="form-group">
-                        <label>response</label>
-                        <input class="form-control" type="text" value="`+intentText+`">
-                    </div>
-                    <div class="form-group">
-                        <label>suggest response</label>
-                        <div class="form-check form-check-inline">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1235235
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 2124124
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline disabled">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 31414
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-
         }
 
+        // an index of current message
+        var intentCount = 0;
 
-
-        var mainCount = 0;
         // Retrieve Firebase Messaging object.
         const database = firebase.database();
         var msg = database.ref('{{bot.name}}');
         msg.on('value', function(snapshot) {
             if(snapshot.val()!=null){
 
-
-                console.log(snapshot.val());
-                console.log(mainCount);
-
                 document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
 
-                `<div id="main`+mainCount+`">
-                <div onclick=test("`+snapshot.val().text+`")>TEST</div>
+                `<div id="main`+intentCount+`">
                     <div class="row">
                         <div class="col-xs-8" style="background-color:white">
                             <form>
@@ -182,15 +130,15 @@
                                 <div class="form-group">
                                     <label>prevision = `+snapshot.val().intent.precision+`</label>
                                     <input class="form-control" type="text" value="`+snapshot.val().intent.text+`">
-                                    <button type="button" class="btn btn-primary" onclick=acceptMsg("${snapshot.val().intent.text}","${mainCount}","${String(snapshot.val().text)}","${snapshot.val().threadId}")>Accept</button>
+                                    <button type="button" class="btn btn-primary" onclick=acceptMsg("${snapshot.val().intent.text}","${intentCount}","${String(snapshot.val().text)}","${snapshot.val().threadId}")>Accept</button>
                                     <button class="btn btn-danger">Reject</button>
                                 </div>
                             </form>
-                            <div id="selectEntity`+mainCount+`"></div>
+                            <div id="selectEntity`+intentCount+`"></div>
                         </div>
                     </div>
 
-                    <div id="response`+mainCount+`"></div>
+                    <div id="response`+intentCount+`"></div>
 
 
                     <hr>
@@ -198,14 +146,9 @@
                 `;
 
 
-                mainCount++;
+                intentCount++;
             }
         })
-
-
-
-
-
 </script>
 </body>
 </html>
