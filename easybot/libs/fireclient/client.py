@@ -10,14 +10,29 @@ config = {
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
-def push_msg(botname, threadid, msg, intent_name, intent_precision):
+def push_msg_intent(botname, threadid, msg, intent_name, intent_precision):
     print("Send msg: {}, intent: {}".format(msg, intent_name))
     db.child(botname).update({
         'threadId': str(threadid),
         'text': msg,
+        'entity': None,
         'intent': {
             'text': intent_name,
             'precision': intent_precision
+        }
+    })
+
+
+def push_msg_entity(botname, threadid, msg, entity_name, entity_value, precision):
+    print("Send msg: {}, entity: {} = {}".format(msg, entity_name, entity_value))
+    db.child(botname).update({
+        'threadId': str(threadid),
+        'text': msg,
+        'intent': None,
+        'entity': {
+            'name': entity_name,
+            'value': entity_value,
+            'precision': precision
         }
     })
 

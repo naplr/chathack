@@ -18,19 +18,27 @@ def _handle_message_from_fb(event):
     rid,  msg = client.extract_message_and_recipientid(event)
 
     # first message
-    new_thread = True
+    try:
+        thread = Thread.objects.get(customer_rid=rid)
+        new_thread = False
+    except Thread.DoesNotExist:
+        new_thread = True
+
     if new_thread:
         intent_name, precision = chatai.get_intent(msg)
 
         intent = Intent.objects.get(text=intent_name)
         thread = Thread.objects.create(customer_rid=rid, intent=intent)
-        fireclient.push_msg(BOTNAME, thread.id, msg, intent_name, precision)
-
-        print("rid at creation: {}".format(rid))
+        fireclient.push_msg_intent(BOTNAME, thread.id, msg, intent_name, precision)
 
     # subsequence msg
     else:
-        pass
+        intent = thread.intent
+
+        cur_entity_name = 'license_number'
+        value, precision = chatai.get_entity(msg, cur_entity_name, mock=True)
+
+        fireclient.push_msg_entity(BOTNAME, thread.id, msg, cur_entity_name, value, precision)
 
 
 @csrf_exempt

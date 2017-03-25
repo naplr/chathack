@@ -6,8 +6,11 @@ class MockChatAi:
         print('get intent!: {}'.format(msg))
         return('report_taxi', 20.8)
 
-    def get_entity(self, msg, entity_name):
+    def get_entity(self, msg, entity_name, mock):
         print('get entity: {}'.format(entity_name))
+        if mock:
+            return('2345-23334', 78.9)
+
         if entity_name == 'location':
             return('Siam Square', 87.3)
         else:
