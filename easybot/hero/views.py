@@ -243,6 +243,7 @@ def accept_entities(request):
     '''
     if request.method == 'POST':
         data = json.loads(request.body.decode("utf-8"))
+        print(data)
         threadid = data['threadId']
         msg = data['msg']
         entities = data['entities']

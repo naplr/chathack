@@ -32,7 +32,11 @@
 </div>
 
 <script>
+    // an index of current message
+    var g_hackindex = 0;
     var g_threadId;
+    var g_curRandId;
+
     function finishSession() {
         $.ajax({
             type: 'POST',
@@ -48,187 +52,185 @@
             }
         });
     }
-        function acceptIntent (intentText, intentCount, msg, threadId) {
-              $.ajax({
-                    type: 'POST',
-                    url: "http://127.0.0.1:8888/admin/api/accept-intent/",
-                    data:  JSON.stringify({
-                        "intent_name": intentText,
-                        "bot_name": "{{bot.name}}",
-                        "msg": msg
-                    }),
-                    success: function(data, status){
-                        console.log(data);
-                        document.getElementById("selectEntity"+intentCount).innerHTML =
-                        `
-                        <label>require entity</label>
-                        <div class="form-group">`;
 
-                        for(var index in data) {
-                            document.getElementById("selectEntity"+intentCount).innerHTML += `
-                                <label name="entityLabel"><input class="form-control" type="text" value="${data[index]}">${index}</label>
-                            `;
-                        }
+    function continueResponse(msg) {
+        $.ajax({
+            type: 'POST',
+            url: "http://127.0.0.1:8888/admin/api/continue-response/",
+            data:  JSON.stringify({
+                "msg": msg,
+                "threadId": g_threadId
+            }),
+            success: function(data, status){
+                console.log(data);
+            },
+            error: function(){
+                console.log('error');
+            }
+        });
+    }
 
-                        document.getElementById("selectEntity"+intentCount).innerHTML += `
-                            </div>
-                            <button type="button" class="btn btn-primary" onclick=acceptEntity("${intentText}","${intentCount}","${msg}","${threadId}")>Continue</button>
-                        `;
+    function addResponse(responseText) {
+        console.log(g_hackindex)
+        g_curRandId = Math.random()
+        document.getElementById("response-"+g_hackindex).innerHTML =
+            `<div class="row">
+                <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
+                    <div class="form-group">
+                        <label>Response</label>
+                        <input class="form-control" type="text" value="${responseText}">
+                    </div>
+                    <div class="form-group">
+                        <button id=${g_curRandId} class="btn btn-primary")>
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            </div>`;
 
-                    },
-                    error: function(){
-                        console.log('error')
-                    }
-                });
-        };
+        $(`#${g_curRandId}`).click(continueResponse(responseText));
+    }
 
-        function continueResponse(threadId, msg) {
-            $.ajax({
-                type: 'POST',
-                url: "http://127.0.0.1:8888/admin/api/continue-response/",
-                data:  JSON.stringify({
-                    "msg": msg,
-                    "threadId": threadId
-                }),
-                success: function(data, status){
-                    console.log(data);
-                },
-                error: function(){
-                    console.log('error');
-                }
-            });
+    function addEntityPredictionToIntent(intentText, msg, data) {
+        document.getElementById(`selectEntity-${g_hackindex}`).innerHTML =
+
+        `<label>Required Entity</label>
+        <div class="form-group">`;
+
+        for(var index in data) {
+            document.getElementById("selectEntity-"+g_hackindex).innerHTML += `
+                <label name="entityLabel"><input class="form-control" type="text" value="${data[index]}">${index}</label> `;
         }
 
-        function acceptEntity (intentText, intentCount, msg, threadId) {
-            var s = $(`#selectEntity${intentCount} > [name='entityLabel']`);
-            var entities = {}; // create an empty array
+        document.getElementById("selectEntity-"+g_hackindex).innerHTML += `
+            </div>
+            <button type="button" class="btn btn-primary" 
+            onclick=acceptEntity("${msg}")>Continue</button> `;
+    }
 
-            const randid = Math.random();
-            function addResponse(responseText) {
-                document.getElementById("response"+intentCount).innerHTML =
-                    `<div class="row">
-                        <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
-                            <div class="form-group">
-                                <label>Response</label>
-                                <input class="form-control" type="text" value="${responseText}">
-                            </div>
-                            <div class="form-group">
-                                <button id=${randid} class="btn btn-primary")>
-                                    Continue
-                                </button>
-                            </div>
+    function acceptIntent(intentText, msg) {
+        $.ajax({
+            type: 'POST',
+            url: "http://127.0.0.1:8888/admin/api/accept-intent/",
+            data:  JSON.stringify({
+                "intent_name": intentText,
+                "bot_name": "{{bot.name}}",
+                "msg": msg
+            }),
+            success: function(data, status){
+                console.log(data);
+                addEntityPredictionToIntent(intentText, msg, data)
+            },
+            error: function(){
+                console.log('error')
+            }
+        });
+    };
+
+    function acceptEntity (msg) {
+        var s = $(`#selectEntity-${g_hackindex} > [name='entityLabel']`);
+        var entities = {}; // create an empty array
+
+        const randid = Math.random();
+
+        // get form data
+        for (var letter of s) {
+            entities[letter.innerText] = letter.children[0].value
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: "http://127.0.0.1:8888/admin/api/accept-entities/",
+            data:  JSON.stringify({
+                "entities": entities,
+                "msg": msg,
+                "threadId": g_threadId
+            }),
+            success: function(data, status){
+                console.log(data);
+                addResponse(data['response'])
+            },
+            error: function(){
+                console.log('error');
+            }
+        });
+    }
+
+    function addMsgWithIntentPrediction(msg, intent) {
+        g_hackindex++
+        document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
+
+        ` <div class="row">
+                <div class="col-xs-8" style="background-color:white">
+                    <form>
+                        <div class="form-group">
+                            <label>User says</label>
+                            <input class="form-control" type="text" value="${msg}">
                         </div>
-                    </div>`;
-
-                $(`#${randid}`).click(continueResponse(threadId, responseText));
-            }
-
-            // get form data
-            for (var letter of s) {
-                entities[letter.innerText] = letter.children[0].value
-            }
-
-            $.ajax({
-                type: 'POST',
-                url: "http://127.0.0.1:8888/admin/api/accept-entities/",
-                data:  JSON.stringify({
-                    "entities": entities,
-                    "msg": msg,
-                    "threadId": threadId
-                }),
-                success: function(data, status){
-                    console.log(data);
-                    addResponse(data['response'])
-                },
-                error: function(){
-                    console.log('error');
-                }
-            });
-        }
-
-        // an index of current message
-        var intentCount = 0;
-
-        function addMsgWithIntentPrediction(msg, intent, threadId) {
-            document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
-
-            `<div id="main${intentCount}">
-                <div class="row">
-                    <div class="col-xs-8" style="background-color:white">
-                        <form>
-                            <div class="form-group">
-                                <label>User says</label>
-                                <input class="form-control" type="text" value="${msg}">
-                            </div>
-                            <div class="form-group">
-                                <label>precision = ${intent.precision}</label>
-                                <input class="form-control" type="text" value="${intent.text}">
-                                <button type="button" class="btn btn-primary" onclick=acceptIntent("${intent.text}","${intentCount}","${String(msg)}","${threadId}")>Accept</button>
-                                <button class="btn btn-danger">Reject</button>
-                            </div>
-                        </form>
-                        <div id="selectEntity${intentCount}"></div>
-                    </div>
+                        <div class="form-group">
+                            <label>precision = ${intent.precision}</label>
+                            <input class="form-control" type="text" value="${intent.text}">
+                            <button type="button" class="btn btn-primary" onclick=acceptIntent("${intent.text}","${String(msg)}")>Accept</button>
+                            <button class="btn btn-danger">Reject</button>
+                        </div>
+                    </form>
+                    <div id="selectEntity-${g_hackindex}"></div>
                 </div>
-
-                <div id="response${intentCount}"></div>
-
-                <hr>
             </div>
-            `;
-        }
 
-        function addMsgWithEntityPrediction(msg, intent, entity, threadId) {
-            document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
+            <div id="response-${g_hackindex}"></div>
+            <hr>
+        `;
+    }
 
-            `<div id="main${intentCount}">
-                <div class="row">
-                    <div class="col-xs-8" style="background-color:white">
-                        <form>
-                            <div class="form-group">
-                                <label>User says</label>
-                                <input class="form-control" type="text" value="${msg}">
-                            </div>
-                            <div class="form-group">
-                                <label>Precision = ${intent.precision}</label>
-                                <input class="form-control" type="text" value="${intent.text}">
-                                <label>Entity: ${entity.name}</label>
-                                <input class="form-control" type="text" value="${entity.value}">
-                                <button type="button" class="btn btn-primary" onclick=acceptEntity("${intent.text}","${intentCount}","${String(msg)}","${threadId}")>Accept</button>
-                            </div>
-                        </form>
-                        <div id="selectEntity${intentCount}"></div>
-                    </div>
+    function addMsgWithEntityPrediction(msg, intent, entity) {
+        g_hackindex++
+        document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
+
+        ` <div class="row">
+                <div class="col-xs-8" style="background-color:white">
+                    <form>
+                        <div class="form-group">
+                            <label>User says</label>
+                            <input class="form-control" type="text" value="${msg}">
+                        </div>
+                        <div class="form-group">
+                            <label>Precision = ${intent.precision}</label>
+                            <input class="form-control" type="text" value="${intent.text}">
+                            <label>Entity: ${entity.name}</label>
+                            <input class="form-control" type="text" value="${entity.value}">
+                            <button type="button" class="btn btn-primary" onclick=acceptEntity("${intent.text}","${String(msg)}")>Accept</button>
+                        </div>
+                    </form>
+                    <div id="selectEntity-${g_hackindex}"></div>
                 </div>
-
-                <div id="response${intentCount}"></div>
-
-                <hr>
             </div>
-            `;
-        }
 
-        // Retrieve Firebase Messaging object.
-        const database = firebase.database();
-        var msg = database.ref('{{bot.name}}');
-        msg.on('value', function(snapshot) {
-            if(snapshot.val()!=null){
-                var msg = snapshot.val().msg;
-                var threadId = snapshot.val().threadId;
-                var intent = snapshot.val().intent;
-                var entity = snapshot.val().entity;
+            <div id="response-${g_hackindex}"></div>
 
-                g_threadId = threadId;
+            <hr>
+        `;
+    }
 
-                if (entity) {
-                    addMsgWithEntityPrediction(msg, intent, entity, threadId)
-                } else if (intent) {
-                    addMsgWithIntentPrediction(msg, intent, threadId)
-                }
+    // Retrieve Firebase Messaging object.
+    const database = firebase.database();
+    var msg = database.ref('{{bot.name}}');
+    msg.on('value', function(snapshot) {
+        if(snapshot.val()!=null){
+            var msg = snapshot.val().text;
+            var threadId = snapshot.val().threadId;
+            var intent = snapshot.val().intent;
+            var entity = snapshot.val().entity;
+
+            g_threadId = threadId;
+
+            if (entity) {
+                addMsgWithEntityPrediction(msg, intent, entity)
+            } else if (intent) {
+                addMsgWithIntentPrediction(msg, intent)
             }
-
-            intentCount++;
-        })
+        }
+    })
 </script>
 </body>
 </html>
