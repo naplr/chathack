@@ -23,10 +23,14 @@
 
 
 
+
+
     </script>
 
     <style type="text/css">
        body { background-color:rgb(235,235,235); }
+
+
 
 
 
@@ -48,7 +52,6 @@
             alert(txt);
         };
 
-
         function acceptMsg (intentText, mainCount, msg) {
              console.log(intentText);
              console.log(mainCount);
@@ -58,9 +61,27 @@
                     url: "http://127.0.0.1:8000/admin/api/accept-intent/",
                     data:  JSON.stringify({
                         "intent_name": intentText,
+                        "bot_name": "{{bot.name}}",
+                        "msg": msg
                     }),
                     success: function(data, status){
-                        console.log(data)
+                        console.log(data);
+                        document.getElementById("selectEntity"+mainCount).innerHTML =
+                        `
+                        <label>require entity</label>
+                        <div class="form-group">`;
+
+                        for(var index in data) {
+                            document.getElementById("selectEntity"+mainCount).innerHTML += `
+                                <label name="entityLabel"><input class="form-control" type="text" value="${data[index]}">${index}</label>
+                            `;
+                        }
+
+                        document.getElementById("selectEntity"+mainCount).innerHTML += `
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick=acceptEntity("${intentText}","${mainCount}","${msg}")>Continue</button>
+                        `;
+
                     },
                     error: function(){
                         console.log('error')
@@ -69,22 +90,56 @@
 
 
 
-             document.getElementById("selectEntity"+mainCount).innerHTML =
 
-             `
-             <label>require entity</label>
-            <div class="form-group">
-                <label><input class="form-control" type="text" value="">taxi location</label>
-                <label><input class="form-control" type="text" value="">Option 2</label>
-                <label><input class="form-control" type="text" value="">Option 2</label>
-            </div>
-            <button type="button" class="btn btn-primary" onclick=acceptEntity("`+intentText+`","`+mainCount+`")>Continue</button>
-            `;
         };
 
 
-        function acceptEntity (intentText,mainCount) {
-            console.log("response"+mainCount);
+        function acceptEntity (intentText,mainCount,msg) {
+            var s = $(`#selectEntity${mainCount} > [name='entityLabel']`);
+            var entities = []; // create an empty array
+
+            // get form data
+            console.log(s);
+            for (var letter of s) {
+                entities.push({
+                    key:   letter.innerText,
+                    value: letter.children[0].value
+                });
+            }
+            console.log(entities);
+
+          $.ajax({
+                type: 'POST',
+                url: "http://127.0.0.1:8000/admin/api/accept-entities/",
+                data:  JSON.stringify({
+                    "intent_name": intentText,
+                    "bot_name": "{{bot.name}}",
+                    "msg": msg
+                }),
+                success: function(data, status){
+                    console.log(data);
+                    document.getElementById("selectEntity"+mainCount).innerHTML =
+                    `
+                    <label>require entity</label>
+                    <div class="form-group">`;
+
+                    for(var index in data) {
+                        document.getElementById("selectEntity"+mainCount).innerHTML += `
+                            <label name="entityLabel"><input class="form-control" type="text" value="${data[index]}">${index}</label>
+                        `;
+                    }
+
+                    document.getElementById("selectEntity"+mainCount).innerHTML += `
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick=acceptEntity("${intentText}","${mainCount}","${msg}")>Continue</button>
+                    `;
+
+                },
+                error: function(){
+                    console.log('error')
+                }
+            });
+
             document.getElementById("response"+mainCount).innerHTML =
             `<div class="row">
                 <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
@@ -145,9 +200,8 @@
                                     <button type="button" class="btn btn-primary" onclick=acceptMsg("${snapshot.val().intent.text}","${mainCount}","${String(snapshot.val().text)}")>Accept</button>
                                     <button class="btn btn-danger">Reject</button>
                                 </div>
-                                <div id="selectEntity`+mainCount+`"></div>
-
                             </form>
+                            <div id="selectEntity`+mainCount+`"></div>
                         </div>
                     </div>
 
@@ -162,6 +216,8 @@
                 mainCount++;
             }
         })
+
+
 
 
 

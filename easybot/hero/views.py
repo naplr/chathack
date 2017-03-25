@@ -115,13 +115,14 @@ def accept_intent(request):
         intent_name = data['intent_name']
         msg = data['msg']
 
-        intent = Intent.objects.get(name=intent_name)
+        intent = Intent.objects.get(text=intent_name)
         entities = list(Entity.objects.filter(intent=intent).values('text'))
-
+        print(entities)
         resp = {}
         for e in entities:
-            text, precision = chatai.get_entity(msg, e.text)
-            resp[e.text] = text   
+            x = chatai.get_entity(msg, e['text'])
+            text = x[0] if x  else ''
+            resp[e['text']] = text
 
         return JsonResponse(resp, safe=False)
 
