@@ -28,7 +28,6 @@ def push_msg_entity(botname, threadid, msg, entity_name, entity_value, precision
     db.child(botname).update({
         'threadId': str(threadid),
         'text': msg,
-        'intent': None,
         'entity': {
             'name': entity_name,
             'value': entity_value,

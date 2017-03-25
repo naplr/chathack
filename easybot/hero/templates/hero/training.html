@@ -26,12 +26,29 @@
 <body>
 {{bot.name}}
 
+<button class="btn btn-danger" onclick=finishSession()>Finish Conversation</button>
+
 <div class="container" id="main">
 </div>
 
 <script>
-        function acceptMsg (intentText, intentCount, msg, threadId) {
-
+    var g_threadId;
+    function finishSession() {
+        $.ajax({
+            type: 'POST',
+            url: "http://127.0.0.1:8888/admin/api/finish-conversation/",
+            data:  JSON.stringify({
+                "threadId": g_threadId
+            }),
+            success: function(data, status){
+                console.log('Finish Session!');
+            },
+            error: function(){
+                console.log('error');
+            }
+        });
+    }
+        function acceptIntent (intentText, intentCount, msg, threadId) {
               $.ajax({
                     type: 'POST',
                     url: "http://127.0.0.1:8888/admin/api/accept-intent/",
@@ -132,43 +149,85 @@
         // an index of current message
         var intentCount = 0;
 
+        function addMsgWithIntentPrediction(msg, intent, threadId) {
+            document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
+
+            `<div id="main${intentCount}">
+                <div class="row">
+                    <div class="col-xs-8" style="background-color:white">
+                        <form>
+                            <div class="form-group">
+                                <label>User says</label>
+                                <input class="form-control" type="text" value="${msg}">
+                            </div>
+                            <div class="form-group">
+                                <label>precision = ${intent.precision}</label>
+                                <input class="form-control" type="text" value="${intent.text}">
+                                <button type="button" class="btn btn-primary" onclick=acceptIntent("${intent.text}","${intentCount}","${String(msg)}","${threadId}")>Accept</button>
+                                <button class="btn btn-danger">Reject</button>
+                            </div>
+                        </form>
+                        <div id="selectEntity${intentCount}"></div>
+                    </div>
+                </div>
+
+                <div id="response${intentCount}"></div>
+
+                <hr>
+            </div>
+            `;
+        }
+
+        function addMsgWithEntityPrediction(msg, intent, entity, threadId) {
+            document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
+
+            `<div id="main${intentCount}">
+                <div class="row">
+                    <div class="col-xs-8" style="background-color:white">
+                        <form>
+                            <div class="form-group">
+                                <label>User says</label>
+                                <input class="form-control" type="text" value="${msg}">
+                            </div>
+                            <div class="form-group">
+                                <label>Precision = ${intent.precision}</label>
+                                <input class="form-control" type="text" value="${intent.text}">
+                                <label>Entity: ${entity.name}</label>
+                                <input class="form-control" type="text" value="${entity.value}">
+                                <button type="button" class="btn btn-primary" onclick=acceptEntity("${intent.text}","${intentCount}","${String(msg)}","${threadId}")>Accept</button>
+                            </div>
+                        </form>
+                        <div id="selectEntity${intentCount}"></div>
+                    </div>
+                </div>
+
+                <div id="response${intentCount}"></div>
+
+                <hr>
+            </div>
+            `;
+        }
+
         // Retrieve Firebase Messaging object.
         const database = firebase.database();
         var msg = database.ref('{{bot.name}}');
         msg.on('value', function(snapshot) {
             if(snapshot.val()!=null){
+                var msg = snapshot.val().msg;
+                var threadId = snapshot.val().threadId;
+                var intent = snapshot.val().intent;
+                var entity = snapshot.val().entity;
 
-                document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
+                g_threadId = threadId;
 
-                `<div id="main`+intentCount+`">
-                    <div class="row">
-                        <div class="col-xs-8" style="background-color:white">
-                            <form>
-                                <div class="form-group">
-                                    <label>user says</label>
-                                    <input class="form-control" type="text" value="`+snapshot.val().text+`">
-                                </div>
-                                <div class="form-group">
-                                    <label>prevision = `+snapshot.val().intent.precision+`</label>
-                                    <input class="form-control" type="text" value="`+snapshot.val().intent.text+`">
-                                    <button type="button" class="btn btn-primary" onclick=acceptMsg("${snapshot.val().intent.text}","${intentCount}","${String(snapshot.val().text)}","${snapshot.val().threadId}")>Accept</button>
-                                    <button class="btn btn-danger">Reject</button>
-                                </div>
-                            </form>
-                            <div id="selectEntity`+intentCount+`"></div>
-                        </div>
-                    </div>
-
-                    <div id="response`+intentCount+`"></div>
-
-
-                    <hr>
-                </div>
-                `;
-
-
-                intentCount++;
+                if (entity) {
+                    addMsgWithEntityPrediction(msg, intent, entity, threadId)
+                } else if (intent) {
+                    addMsgWithIntentPrediction(msg, intent, threadId)
+                }
             }
+
+            intentCount++;
         })
 </script>
 </body>
