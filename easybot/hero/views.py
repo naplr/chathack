@@ -178,7 +178,7 @@ def add_new_intent(request):
             # Update thread with all entities (not found entities will be blank)
             thread_entities = entities
         
-        thread.entities = json.dump(thread_entities)
+        thread.entities = json.dumps(thread_entities)
         thread.save()
 
         missing_entities = [k for k in thread_entities if not entities[k]]
@@ -234,10 +234,9 @@ def accept_entities(request):
         entities = data['entities']
             
         thread = Thread.objects.get(id=threadid)
-        thread_entities = json.load(thread.entities)
-
         if len(entities) == 1:
             # There will be no empty value here
+            thread_entities = json.load(thread.entities)
             entity_name = entities.keys()[0]
             thread_entities[entity_name] = entities[entity_name]
         else:
@@ -246,10 +245,12 @@ def accept_entities(request):
             # Update thread with all entities (not found entities will be blank)
             thread_entities = entities
         
-        thread.entities = json.dump(thread_entities)
+        thread.entities = json.dumps(thread_entities)
         thread.save()
 
-        missing_entities = [k for k in thread_entities if not entities[k]]
+        print(thread_entities)
+
+        missing_entities = [k for k in thread_entities if not thread_entities[k]]
         # Create response to ask for an entity
         if len(missing_entities) > 0:
             entity = Entity.objects.get(text=missing_entities[0])

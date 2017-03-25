@@ -58,7 +58,7 @@
 
               $.ajax({
                     type: 'POST',
-                    url: "http://127.0.0.1:8000/admin/api/accept-intent/",
+                    url: "http://127.0.0.1:8888/admin/api/accept-intent/",
                     data:  JSON.stringify({
                         "intent_name": intentText,
                         "bot_name": "{{bot.name}}",
@@ -96,21 +96,22 @@
 
         function acceptEntity (intentText,mainCount,msg,threadId) {
             var s = $(`#selectEntity${mainCount} > [name='entityLabel']`);
-            var entities = []; // create an empty array
+            var entities = {}; // create an empty array
 
             // get form data
             console.log(s);
             for (var letter of s) {
-                entities.push({
-                    key:   letter.innerText,
-                    value: letter.children[0].value
-                });
+                // entities.push({
+                //     key:   letter.innerText,
+                //     value: letter.children[0].value
+                // });
+                entities[letter.innerText] = letter.children[0].value
             }
             console.log(entities);
 
             $.ajax({
                 type: 'POST',
-                url: "http://127.0.0.1:8000/admin/api/accept-entities/",
+                url: "http://127.0.0.1:8888/admin/api/accept-entities/",
                 data:  JSON.stringify({
                     "entities": entities,
                     "msg": msg,
