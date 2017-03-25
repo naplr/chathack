@@ -38,61 +38,10 @@
 <body>
 {{bot.name}}
 
-
 <div class="container" id="main">
 
-    <div class="row">
-        <div class="col-xs-8" style="background-color:white">
-            <form>
-                <div class="form-group">
-                    <label>user says</label>
-                    <input class="form-control" type="text" value="blablabla">
-                </div>
-                <div class="form-group">
-                    <label>intent</label>
-                    <input class="form-control" type="text" value="94%">
-                    <button type="submit" class="btn btn-primary">Accept</button>
-                    <button type="submit" class="btn btn-danger">Reject</button>
-                </div>
-                <label>require entity</label>
-                <div class="form-group">
-                    <label><input class="form-control" type="text" value="">taxi location</label>
-                    <label><input class="form-control" type="text" value="">Option 2</label>
-                    <label><input class="form-control" type="text" value="">Option 2</label>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
-            <div class="form-group">
-                <label>response to</label>
-                <input class="form-control" type="text" value="blablabla">
-            </div>
-            <div class="form-group">
-                <label>suggest response</label>
-                <div class="form-check form-check-inline">
-                    <label class="form-check-label">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1235235
-                    </label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <label class="form-check-label">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 2124124
-                    </label>
-                </div>
-                <div class="form-check form-check-inline disabled">
-                    <label class="form-check-label">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 31414
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
-    <hr>
-
 </div>
+
 <script>
 
         function test (txt) {
@@ -100,13 +49,13 @@
         };
 
 
-        function acceptMsg (intentText, mainCount) {
+        function acceptMsg (intentText, mainCount, msg) {
              console.log(intentText);
              console.log(mainCount);
 
               $.ajax({
                     type: 'POST',
-                    url: "127.0.0.1:8000/admin/api/accept-intent/",
+                    url: "http://127.0.0.1:8000/admin/api/accept-intent/",
                     data:  JSON.stringify({
                         "intent_name": intentText,
                     }),
@@ -114,7 +63,7 @@
                         console.log(data)
                     },
                     error: function(){
-                        console.log(data)
+                        console.log('error')
                     }
                 });
 
@@ -193,7 +142,7 @@
                                 <div class="form-group">
                                     <label>prevision = `+snapshot.val().intent.precision+`</label>
                                     <input class="form-control" type="text" value="`+snapshot.val().intent.text+`">
-                                    <button type="button" class="btn btn-primary" onclick=acceptMsg("`+snapshot.val().intent.text+`","`+mainCount+`")>Accept</button>
+                                    <button type="button" class="btn btn-primary" onclick=acceptMsg("${snapshot.val().intent.text}","${mainCount}","${String(snapshot.val().text)}")>Accept</button>
                                     <button class="btn btn-danger">Reject</button>
                                 </div>
                                 <div id="selectEntity`+mainCount+`"></div>
