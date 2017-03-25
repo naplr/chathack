@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^bot/(?P<bot_pk>{})/edit-intent/(?P<pk>{})/'.format(uuid_regex, uuid_regex), views.setup_edit_intent),
     url(r'^api/accept-intent/',views.accept_intent),
     url(r'^api/reject-intent/', views.reject_intent),
+    url(r'^api/accept-entities/', views.accept_entities),
     url(r'^chat-test/$', views.chat_test),
     url(r'^', views.bot_list),
 

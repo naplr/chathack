@@ -127,7 +127,7 @@ def accept_intent(request):
         return JsonResponse(resp, safe=False)
 
     else:  # test. Dont' use it!
-        print("Shuldn't be here")
+        print("Shouldn't be here")
 
 
 @csrf_exempt
@@ -142,6 +142,74 @@ def reject_intent(request):
         for intent in intents:
             intent['pk'] = str(intent['pk'])
         return JsonResponse(intents, safe=False)
+
+
+@csrf_exempt
+def accept_entities(request):
+    '''
+    IN: {
+        threadId: 'threadid',
+        msg: "hello people",
+        entities: {
+            location: "siamsquare",
+            time: "",
+        }
+    }
+    OUT: {
+        threadId: 'threadId',
+        response: "Please tell us your location!"
+        entity_name: "location"
+    } 
+
+    or if we have all entities
+    {
+        threadId: 'threadId',
+        response: 'Thanks for reporting. We will contact you back soon'
+    }
+    '''
+    if request.method == 'POST':
+        data = json.loads(request.body.decode("utf-8"))
+        threadid = data['threadId']
+        msg = data['msg']
+        entities = data['entities']
+            
+        thread = Thread.objects.get(id=threadid)
+        thread_entities = json.load(thread.entities)
+
+        if len(entities) == 1:
+            # There will be no empty value here
+            entity_name = entities.keys()[0]
+            thread_entities[entity_name] = entities[entity_name]
+        else:
+            # We assume that there will be all entities here
+            # This should be only the case after accept intent only
+            # Update thread with all entities (not found entities will be blank)
+            thread_entities = entities
+        
+        thread.entities = json.dump(thread_entities)
+        thread.save()
+
+        missing_entities = [k for k in thread_entities if not entities[k]]
+        # Create response to ask for an entity
+        if len(missing_entities) > 0:
+            entity = Entity.objects.get(text=missing_entities[0])
+            response = entity.response
+            data = {
+                'threadId': threadid,
+                'response': response.text,
+                'entity': entity.text
+            }
+
+            return JsonResponse(data)
+        else:
+        # We have all required entities
+            response = thread.intent.response.text
+            data = {
+                'threadId': threadid,
+                'response': response
+            }
+    else:  # test. Dont' use it!
+        print("Shouldn't be here")
 
 
 def chat_test(request):

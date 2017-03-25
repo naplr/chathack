@@ -41,3 +41,10 @@ class Intent(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class Thread(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    customer_recipientid = models.CharField(max_length=200)
+    intent = models.ForeignKey(Intent, related_name='thread')
+    entities = models.CharField(max_length=5000)
