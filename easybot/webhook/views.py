@@ -7,6 +7,7 @@ import traceback
 from libs.fbclient.client import FbClient
 from libs.chatai.chatai import ChatAi
 from libs.fireclient import client as fireclient
+from hero.models import *
 
 ACCESS_TOKEN = 'EAAD8zs76JyMBAMbMsKZCFum0z6gqGWnz8wmoqcfA2PFP47DvmRqKbtLUqBdhfLapGpvLF3EmDMTlsZBTBNAUxZAHwlh7Gyr7ZAsc9TG0k2laFHc0uY0sneookV59sZAJpKv0NL1RRPZAUqrD05Vy2xjseisrAk81F3mGSZBZCu9BwgZDZD'
 BOTNAME = '1584bot'
@@ -20,7 +21,9 @@ def _handle_message_from_fb(event):
     new_thread = True
     if new_thread:
         intent_name, precision = chatai.get_intent(msg)
-        fireclient.push_msg(BOTNAME, msg, intent_name, precision)
+        thread = Therad.objects.create(customer_rid=rid, intent_text=intent_name)
+
+        fireclient.push_msg(BOTNAME, thread.id, msg, intent_name, precision)
 
     # subsequence msg
     else:
