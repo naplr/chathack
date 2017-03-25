@@ -4,7 +4,6 @@ ACCESS_TOKEN = 'NL4Y24EMPAVTPLCQJKRRWKOJ54AAZ4QG'
 _params = {'v': '20160526'}
 
 class WitChatAi:
-
     def __init__(self, botname):
         print("Wit: {}".format(botname))
         self.client = wit.Wit(access_token=ACCESS_TOKEN)

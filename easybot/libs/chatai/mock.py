@@ -4,6 +4,7 @@ class MockChatAi:
 
     def get_intent(self, msg):
         print('get intent!: {}'.format(msg))
+        return('report_taxi', 20.8)
 
     def get_entity(self, msg, entity_type):
         pass

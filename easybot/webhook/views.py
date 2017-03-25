@@ -4,53 +4,35 @@ import requests
 from django.views.decorators.csrf import csrf_exempt
 import json
 import traceback
+from libs.fbclient.client import FbClient
+from libs.chatai.chatai import ChatAi
+from libs.fireclient import client as fireclient
 
+ACCESS_TOKEN = 'EAAD8zs76JyMBAMbMsKZCFum0z6gqGWnz8wmoqcfA2PFP47DvmRqKbtLUqBdhfLapGpvLF3EmDMTlsZBTBNAUxZAHwlh7Gyr7ZAsc9TG0k2laFHc0uY0sneookV59sZAJpKv0NL1RRPZAUqrD05Vy2xjseisrAk81F3mGSZBZCu9BwgZDZD'
+BOTNAME = '1584bot'
 
-def callSendAPI(messageData):
-    response = requests.post('https://graph.facebook.com/v2.6/me/messages',
-                             params={
-                                 'access_token': 'EAAD8zs76JyMBAMbMsKZCFum0z6gqGWnz8wmoqcfA2PFP47DvmRqKbtLUqBdhfLapGpvLF3EmDMTlsZBTBNAUxZAHwlh7Gyr7ZAsc9TG0k2laFHc0uY0sneookV59sZAJpKv0NL1RRPZAUqrD05Vy2xjseisrAk81F3mGSZBZCu9BwgZDZD'},
-                             json=messageData
-                             )
-    print('callSendAPI response: ' + str(response.content))
+def _handle_message_from_fb(event):
+    client = FbClient(ACCESS_TOKEN)
+    chatai = ChatAi('mock', BOTNAME)
+    rid,  msg = client.extract_message_and_recipientid(event)
 
+    # first message
+    new_thread = True
+    if new_thread:
+        intent_name, precision = chatai.get_intent(msg)
+        fireclient.push_msg(BOTNAME, msg, intent_name, precision)
 
-def sendTextMessage(recipientId, messageText):
-    messageData = {
-        'recipient': {
-            'id': recipientId
-        },
-        'message': {
-            'text': messageText
-        }
-    }
-    callSendAPI(messageData)
-
-
-def receivedMessage(event):
-    senderID = event['sender']['id']
-    recipientID = event['recipient']['id']
-    timeOfMessage = event['timestamp']
-    message = event['message']
-
-    messageId = message['mid']
-
-    if ('text' in message):
-        print("Received message for user {} and page {} at {} with message: {}".format(
-            senderID, recipientID, timeOfMessage, message['text']))
-        sendTextMessage(senderID, message['text'])
-
+    # subsequence msg
     else:
-        print(str(message))
-        sendTextMessage(senderID, "Message with attachment received")
+        pass
+
 
 
 @csrf_exempt
 def webhook(request):
     try:
-        print(request)
-        if request.method == "GET":
-            # print(request.GET)
+        # 'GET' request is for setting up webhook with challenge.
+        if request.method == 'GET':
             if (request.GET.get('hub.mode') == 'subscribe' and request.GET.get('hub.verify_token') == '7771717'):
                 return HttpResponse(request.GET.get('hub.challenge'))
             return HttpResponseForbidden()
@@ -60,11 +42,11 @@ def webhook(request):
             print('data: ' + str(data))
             if data['object'] == 'page':
                 for entry in data['entry']:
-                    pageID = entry['id']
-                    timeOfEvent = entry['time']
+                    pageid = entry['id']
+                    time_of_event = entry['time']
                     for event in entry['messaging']:
                         if 'message' in event:
-                            receivedMessage(event)
+                            _handle_message_from_fb(event)
                         else:
                             print("Webhook received unknown event: " + event)
 

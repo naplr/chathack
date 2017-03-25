@@ -11,6 +11,7 @@ firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
 def push_msg(botname, msg, intent_name, intent_precision):
+    print("Send msg: {}, intent: {}".format(msg, intent_name))
     db.child(botname).update({
         'text': msg,
         'intent': {

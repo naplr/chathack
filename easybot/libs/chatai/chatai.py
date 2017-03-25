@@ -13,16 +13,19 @@ class ChatAi:
             raise Exception('invalid ainame')
 
     def get_intent(self, msg):
-        self.client.get_intent(msg)
+        '''
+        return (intent_name, precision)
+        '''
+        return self.client.get_intent(msg)
 
     def get_entity(self, msg, entity_type):
-        self.client.get_entity(msg, entity_type)
+        return self.client.get_entity(msg, entity_type)
 
     def create_intent(self, intent_name):
-        self.client.create_intent(intent_name)
+        return self.client.create_intent(intent_name)
 
     def create_entity(self, entity_name):
-        self.client.create_entity(entity_name)
+        return self.client.create_entity(entity_name)
 
 
 
