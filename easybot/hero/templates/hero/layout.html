@@ -51,13 +51,13 @@
                 <li style="height:100px">
                     <a> </a>
                 </li>
-                <li class="special_link">
+                <li class="{% block deploy %}{% endblock %}">
                     <a><span class="nav-label"><h2><b>DEPLOY</b></h2></span></a>
                 </li>
-                <li>
+                <li class="{% block setting %}{% endblock %}">
                     <a><span class="nav-label"><h2><b>setting mode</b></h2></span></a>
                 </li>
-                <li>
+                <li class="{% block training %}{% endblock %}">
                     <a><span class="nav-label"><h2><b>training mode</b></h2></span></a>
                 </li>
             </ul>
@@ -69,21 +69,14 @@
             <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
                 <div class="navbar-header">
                     <img src="/static/ggg.png" style="height:60px;margin-left:20px">
-
-
                 </div>
                 <ul class="nav navbar-top-links navbar-right">
                     <li>
-                        <span class="m-r-sm text-muted welcome-message">Welcome to INSPINIA+ Admin Theme.</span>
+                        <span class="m-r-sm text-muted welcome-message">Welcome to EasyBot @ Hkathon 2017</span>
                     </li>
                     <li>
                         <a href="/logout/">
                             <i class="fa fa-sign-out"></i> Log out
-                        </a>
-                    </li>
-                    <li>
-                        <a class="right-sidebar-toggle">
-                            <i class="fa fa-tasks"></i>
                         </a>
                     </li>
                 </ul>
@@ -91,22 +84,13 @@
             </nav>
         </div>
 
-        <div class="row wrapper border-bottom white-bg page-heading" style="margin-bottom:20px">
+        <div class="row wrapper border-bottom white-bg page-heading" style="padding-top:25px;margin-bottom:20px">
             <div class="col-lg-10">
-                                <ol class="breadcrumb">
-                    <li>
-                    </li>
-                    <li>
-                    </li>
-                    <li class="active">
-                    </li>
-                </ol>
                 <h2 style="padding-bottom:10px">{% block header %}{% endblock %}</h2>
-
             </div>
-            <div class="col-lg-2">
-
-            </div>
+                <div class="col-lg-2 btn btn-warning bth-lg" style="height:6.5vh;font-size:18px;padding:0;display:table">
+                    <div style="display:table-cell;vertical-align:middle">save changes</div>
+                </div>
         </div>
 
 
@@ -114,84 +98,6 @@
 
 
 
-        <div class="small-chat-box fadeInRight animated">
-
-            <div class="heading" draggable="true">
-                <small class="chat-date pull-right">
-                    02.19.2015
-                </small>
-                Small chat
-            </div>
-
-            <div class="content">
-
-                <div class="left">
-                    <div class="author-name">
-                        Monica Jackson
-                        <small class="chat-date">
-                            10:02 am
-                        </small>
-                    </div>
-                    <div class="chat-message active">
-                        Lorem Ipsum is simply dummy text input.
-                    </div>
-
-                </div>
-                <div class="right">
-                    <div class="author-name">
-                        Mick Smith
-                        <small class="chat-date">
-                            11:24 am
-                        </small>
-                    </div>
-                    <div class="chat-message">
-                        Lorem Ipsum is simpl.
-                    </div>
-                </div>
-                <div class="left">
-                    <div class="author-name">
-                        Alice Novak
-                        <small class="chat-date">
-                            08:45 pm
-                        </small>
-                    </div>
-                    <div class="chat-message active">
-                        Check this stock char.
-                    </div>
-                </div>
-                <div class="right">
-                    <div class="author-name">
-                        Anna Lamson
-                        <small class="chat-date">
-                            11:24 am
-                        </small>
-                    </div>
-                    <div class="chat-message">
-                        The standard chunk of Lorem Ipsum
-                    </div>
-                </div>
-                <div class="left">
-                    <div class="author-name">
-                        Mick Lane
-                        <small class="chat-date">
-                            08:45 pm
-                        </small>
-                    </div>
-                    <div class="chat-message active">
-                        I belive that. Lorem Ipsum is simply dummy text.
-                    </div>
-                </div>
-
-
-            </div>
-            <div class="form-chat">
-                <div class="input-group input-group-sm"><input type="text" class="form-control"> <span
-                        class="input-group-btn"> <button
-                        class="btn btn-primary" type="button">Send
-                </button> </span></div>
-            </div>
-
-        </div>
 
         <div id="small-chat">
 
