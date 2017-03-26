@@ -1,47 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Main page</title>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <!--<script src='/static/js/dropzone.js'></script>-->
-</head>
-<body>
+{% extends 'hero/layout.html' %}
 
-<h2>{{bot.name}} setup</h2>
+{% block title %}
+SETTING MODE
+{% endblock %}
+
+{% block header %}
+SETTING MODE
+{% endblock %}
+
+{% block content %}
+
+<a href="add-intent/" class="ibox float-e-margins">
+    <div class="ibox-title" style="background-color:#1C84C6;margin-bottom:20px">
+        <h2><b style="color:white"><i class="fa fa-plus-square-o"></i>  Add intent</b>
+        </h2>
+    </div>
+</a>
 
 {% for intent in intent_list %}
-<p><b>intent: </b>{{ intent.text }}</p>
 
-{% for e in intent.entity.all %}
-<div style="margin-left:20px">
-    <p>
-        <b>entity name: </b>{{ e.text }}<br>
-        <b>entity request: </b>{{ e.response.text }}<br>
-        <b>response type: </b>{{ e.response.type }}<br>
-    </p>
+<div class="ibox float-e-margins collapsed" style="margin-bottom:0px">
+
+    <div class="ibox-title">
+        <div style="display:inline;float:left;margin-right:20px"><h2><b>Intent</b></h2></div>
+        <div class="input-group" style="width:60%;display:inline">
+            <input disabled value="{{intent.text}}" type="text" placeholder="Intent" name="intent" class="form-control" style="width:60%;display:inline">
+            <span class="input-group-btn" style="width:60%;display:inline">
+                <button disabled type="button" class="btn btn-default"><i class="fa fa-bars"></i>
+            </button>
+            </span>
+        </div>
+        <div class="ibox-tools" style="float:right;margin-top:6px">
+            <a class="collapse-link">
+                <i class="fa fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="ibox-content">
+        <div class="flot-chart">
+            {% for e in intent.entity.all %}
+            <div class="col-xs-5 col-xs-offset-1">
+                <div class="input-group">
+                    <input disabled value="{{ e.text }}" type="text" placeholder="Entity name" name="e1" class="form-control">
+                    <span class="input-group-btn">
+                        <button disabled type="button" class="btn btn-default"><i class="fa fa-bars"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-xs-5">
+                <div class="form-group form-inline">
+                    <input disabled value="{{ e.response.text }}" type="text" placeholder="Request response" name="e1r" class="form-control" style="width:70%">
+                    <select disabled name="e1t" class="form-control" style="width:29%">
+                        <option>{{ e.response.type }}</option>
+                    </select>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <hr>
+        <div style="height:32px">
+            <div class="form-group form-inline"><label class="col-sm-2 control-label" style="margin-top:9px">Intent response</label>
+                <div class="col-sm-10">
+                    <input disabled value="{{ intent.response }}" type="text" class="form-control" placeholder="Response" name="response" required="" style="width:90%">
+                    <select disabled name="response_type" class="form-control" style="width:9%">
+                        <option>{{ intent.response.type }}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-{% endfor %}
-<p><b>response: </b>{{ intent.response }}</p>
 
-<!--<a href="edit-intent/{{ intent.id }}/"> EDIT </a>-->
-<hr>
 {% endfor %}
 
-<a href="add-intent/"> Add intent</a>
-<br>
+
 <a href="training/"> Training </a>
-
 <br>
-<br>
-
 Upload intent from CSV
 <form action="" method="post" id="form" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" name="file" accept="text/csv"/>
     <input type="submit" value="Submit"/>
 </form>
-</body>
-</html>
+
+
+{% endblock %}

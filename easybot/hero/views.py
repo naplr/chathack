@@ -43,7 +43,7 @@ def setup(request, bot_pk):
             response = Response.objects.create(text=row['response'], type=row['responsetype'])
             intent = Intent.objects.create(text=row['intent'], response=response, bot=Bot.objects.get(pk=bot_pk))
 
-            for num in range(1, 6):
+            for num in range(1, 4):
                 entity_text = row['e' + str(num)]
                 entity_response_text = row['e' + str(num) + 'r']
                 entity_response_type = row['e' + str(num) + 't']
@@ -92,7 +92,7 @@ def setup_add_intent(request, bot_pk):
         response = Response.objects.create(text=form['response'], type=form['response_type'])
         intent = Intent.objects.create(text=form['intent'], response=response, bot=Bot.objects.get(pk=bot_pk))
 
-        for num in range(1, 6):
+        for num in range(1, 4):
             entity_text = form['e' + str(num)]
             entity_response_text = form['e' + str(num) + 'r']
             entity_response_type = form['e' + str(num) + 't']
