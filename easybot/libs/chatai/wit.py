@@ -1,4 +1,5 @@
 import wit
+from functools import reduce
 
 ACCESS_TOKEN = 'NL4Y24EMPAVTPLCQJKRRWKOJ54AAZ4QG'
 _params = {'v': '20160526'}
@@ -18,15 +19,12 @@ class WitChatAi:
         # (self.logger, self.access_token, 'GET', '/message', params)
         # params['context'] = json.dumps(context)
 
-
     def _get_with_params(self, path, params):
         params.update(_params)
         return wit.req(self.client.logger, self.client.access_token, 'GET', path, params)
 
-
     def _get_wit_intents(self):
         return self._get('/entities/intent')
-
 
     def create_intent(self, intent_name, examples=[]):
         data = {
@@ -34,8 +32,9 @@ class WitChatAi:
             'expression': examples
         }
 
-        return self._post('/entities/intents/values', data)
+        print(data)
 
+        return self._post('/entities/intent/values', data)
 
     def create_entity(self, entity_name, values={}):
         data = {
@@ -45,40 +44,35 @@ class WitChatAi:
 
         return self._post('/entities', data)
 
+    def get_intents(self, msg):
+        params = {'q': msg}
+        # resp = self._get('/entities/intent')
+        # resp = self._get('/entities')
+        resp = self.client.message(msg)
+        predicted_intent_objs = resp['entities']['intent']
+
+        intents = {}
+        for i in predicted_intent_objs:
+            intents[i['value']] = i['confidence']
+
+        return intents
 
     def get_intent(self, msg):
-        params = {'q': msg}
-        resp = self._get('/entities/intent')
-        print(str(resp))
+        intents = self.get_intents(msg)
+        key, conf = reduce(lambda m, i: [i, intents[i]] if intents[i]>m[1] else m, intents, ['', 0])
+        best_intent = (key, conf)
 
-        # return self.client.message(msg, verbose=True)
+        return best_intent
 
+    def get_entities(self, msg, entity_name):
+        resp = self.client.message(msg)
+        predicted_entities = resp['entities'][entity_name]
+
+        return map(lambda e: [e['value'], e['confidence']], predicted_entities)
 
     def get_entity(self, msg, entity_name):
-        pass
+        entities = self.get_entities(msg, entity_name)
+        key, conf = reduce(lambda m, e: e if e[1]>m[1] else m, entities, ['', 0])
+        best_entity = (key, conf)
 
-
-
-        # data = {
-            # 'id': 'intent',
-            # 'values': [{
-                # 'value': 'hello',
-                # 'expressions': [
-                    # 'Hi',
-                    # 'Hi guys!',
-                    # 'Hello',
-                    # 'Hello mr.',
-                    # 'hi people',
-                    # 'yo'
-                # ]}, {
-                # 'value': 'bye',
-                # 'expressions': [
-                    # 'See you',
-                    # 'Bye',
-                    # 'Bye Bye',
-                    # 'See you later',
-                    # 'later',
-                    # 'good luck'
-                # ]}
-            # ]
-        # }
+        return best_entity

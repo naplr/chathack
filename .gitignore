@@ -16,3 +16,4 @@ env_ocr/
 *.log
 yarn.lock
 .vscode/
+.DS_Store
