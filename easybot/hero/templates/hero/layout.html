@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 {% load staticfiles %}
 <html>
-{% block extra_script_head %}{% endblock %}
 <head>
 
     <meta charset="utf-8">
@@ -34,6 +33,7 @@
     <link href="/static/css/animate.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
 
+    {% block extra_script_head %}{% endblock %}
 
     {% block extra_css %}{% endblock %}
 </head>
@@ -52,7 +52,7 @@
                     <a> </a>
                 </li>
                 <li class="{% block deploy %}{% endblock %}">
-                    <a><span class="nav-label"><h2><b>DEPLOY</b></h2></span></a>
+                    <a><span class="nav-label"><h2><b>deploy</b></h2></span></a>
                 </li>
                 <li class="{% block setting %}{% endblock %}">
                     <a><span class="nav-label"><h2><b>setting mode</b></h2></span></a>
@@ -88,9 +88,9 @@
             <div class="col-lg-10">
                 <h2 style="padding-bottom:10px">{% block header %}{% endblock %}</h2>
             </div>
-                <div class="col-lg-2 btn btn-warning bth-lg" style="height:6.5vh;font-size:18px;padding:0;display:table">
-                    <div style="display:table-cell;vertical-align:middle">save changes</div>
-                </div>
+                <a href="{% block button_link %}{% endblock %}" onclick="{% block button_onclick %}{% endblock %}" class="col-lg-2 btn btn-warning bth-lg" style="height:6.5vh;font-size:18px;padding:0;display:table">
+                    <div style="display:table-cell;vertical-align:middle">{% block button_name %}{% endblock %}</div>
+                </a>
         </div>
 
 

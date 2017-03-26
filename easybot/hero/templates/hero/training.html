@@ -1,32 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Training Mode</title>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
-    <script>
-        // Initialize Firebase
-        var config = {
-            apiKey: "AIzaSyBbLf8k4NKQVXfjMg--POKkiQjHi2yuTxc",
-            authDomain: "chathack-db0fb.firebaseapp.com",
-            databaseURL: "https://chathack-db0fb.firebaseio.com",
-            storageBucket: "chathack-db0fb.appspot.com",
-            messagingSenderId: "1039260391551"
-        };
-        firebase.initializeApp(config);
-    </script>
+{% extends 'hero/layout.html' %}
 
-    <style type="text/css">
-       body { background-color:rgb(235,235,235); }
-    </style>
+{% block title %}
+TRAINING MODE
+{% endblock %}
 
-<body>
-{{bot.name}}
+{% block header %}
+TRAINING MODE
+{% endblock %}
 
-<button class="btn btn-danger" onclick=finishSession()>Finish Conversation</button>
+{% block training %}
+special_link
+{% endblock %}
+
+{% block button_name %}
+end conversation
+{% endblock %}
+
+{% block button_onclick %}
+finishSession()
+{% endblock %}
+
+{% block extra_script_head %}
+<script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
+
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyBbLf8k4NKQVXfjMg--POKkiQjHi2yuTxc",
+        authDomain: "chathack-db0fb.firebaseapp.com",
+        databaseURL: "https://chathack-db0fb.firebaseio.com",
+        storageBucket: "chathack-db0fb.appspot.com",
+        messagingSenderId: "1039260391551"
+    };
+    firebase.initializeApp(config);
+</script>
+{% endblock %}
+
+{% block content %}
 
 <div class="container" id="main">
 </div>
@@ -38,6 +48,7 @@
     var g_curRandId;
 
     function finishSession() {
+        console.log(finishSession);
         $.ajax({
             type: 'POST',
             url: "http://127.0.0.1:8888/admin/api/finish-conversation/",
@@ -73,6 +84,7 @@
     function addResponse(responseText) {
         g_curRandId = Math.random()
         document.getElementById("response-"+g_hackindex).innerHTML =
+
             `<div class="row">
                 <div class="col-xs-8 col-xs-offset-4" style="background-color:white">
                     <div class="form-group">
@@ -103,7 +115,7 @@
 
         document.getElementById("selectEntity-"+g_hackindex).innerHTML += `
             </div>
-            <button type="button" class="btn btn-primary" 
+            <button type="button" class="btn btn-primary"
             onclick=acceptEntity("${msg}")>Continue</button> `;
     }
 
@@ -121,9 +133,9 @@
         document.getElementById("selectEntity-"+g_hackindex).innerHTML += `
             </select>
             </div>
-            <button type="button" class="btn btn-primary" 
-            onclick=acceptIntent("${$('select[name=intents]').val()}","${msg}")>Select this intent</button> 
-            <button type="button" class="btn btn-primary" 
+            <button type="button" class="btn btn-primary"
+            onclick=acceptIntent("${$('select[name=intents]').val()}","${msg}")>Select this intent</button>
+            <button type="button" class="btn btn-primary"
             onclick=addNewIntent("${msg}")>Add New Intent</button> `;
     }
 
@@ -202,11 +214,17 @@
         g_hackindex++
         document.getElementById("main").innerHTML = document.getElementById("main").innerHTML +
 
-        ` <div class="row">
+
+
+
+
+
+           `
+           <div class="btn btn-success">User says:</div>
+           <div class="row">
                 <div class="col-xs-8" style="background-color:white">
                     <form>
                         <div class="form-group">
-                            <label>User says</label>
                             <input class="form-control" type="text" value="${msg}">
                         </div>
                         <div class="form-group">
@@ -273,6 +291,7 @@
             }
         }
     })
+
 </script>
-</body>
-</html>
+
+{% endblock %}
