@@ -14,7 +14,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from libs.chatai.chatai import ChatAi
 from libs.fbclient.client import FbClient
 
-chatai = ChatAi('mock', '1584bot')
+BOTNAME = '1584bot'
+chatai = ChatAi('mock', BOTNAME)
 # TODO: Add access token
 fbclient = FbClient()
 
@@ -115,6 +116,7 @@ def accept_intent(request):
 
     if request.method == 'POST':
         data = json.loads(request.body.decode("utf-8"))
+        print(data) 
         intent_name = data['intent_name']
         msg = data['msg']
 
@@ -135,16 +137,40 @@ def accept_intent(request):
 
 @csrf_exempt
 def reject_intent(request):
-    # IN: intent name, bot ID
+    '''
+    IN: intent name, bot ID
+    {
+        msg: <msg>,
+        intentName: <intent_name>,
+        threadId: <thread_id>
+    }
     # OUT: all intent belonging to BOT
-
+    {
+        intents: [
+            <intent_name>,
+            <intent_name>,
+        ]
+    }
+    '''
     if request.method == 'POST':
-        intent_name = uuid.UUID(json.loads(request.body.decode("utf-8"))['intent_name'])
-        bot = Bot.objects.get(intent__pk=intent_name)
-        intents = list(Intent.objects.filter(bot=bot).values('pk', 'text'))
-        for intent in intents:
-            intent['pk'] = str(intent['pk'])
-        return JsonResponse(intents, safe=False)
+        data = json.loads(request.body.decode("utf-8"))
+        print(data)
+        msg = data['msg']
+        intent_name = data['intent_name']
+        threadid = data['threadId']
+        bot_name = BOTNAME
+        bot = Bot.objects.get(name=bot_name)
+
+        intents = Intent.objects.filter(bot=bot).all()
+        intents_resp = {}
+        for i in intents:
+            intents_resp[i.text] = i.text
+        resp = { 
+            'msg': msg,
+            'intents': intents_resp 
+        }
+        
+        return JsonResponse(resp, safe=False)
 
 
 @csrf_exempt
@@ -174,8 +200,11 @@ def finish_conversation(request):
         data = json.loads(request.body.decode("utf-8"))
         threadid = data['threadId']
 
-        thread = Thread.objects.get(id=threadid)
-        thread.delete()
+        try:
+            thread = Thread.objects.get(id=threadid)
+            thread.delete()
+        except Thread.DoesNotExist:
+            print("Thread {} was already deleted!".format(threadid))
 
         return HttpResponse(status=200)
     else:  
@@ -208,11 +237,18 @@ def add_new_intent(request):
         thread = Thread.objects.get(id=threadid)
         thread_entities = json.load(thread.entities)
 
+        # Create intent.
+        Intent.objects.create(
+            text=new_intent_name, 
+            bot=BOTNAME, 
+            response=response)
+        chatai.create_intent(new_intent_name, [msg])
+
         data = {
             'threadId': threadid,
-            'response': response.text,
-            'entity': entity.text
+            'response': response,
         }
+        
         return JsonResponse(data)
     else:  
         return HttpResponseNotAllowed(['POST'])

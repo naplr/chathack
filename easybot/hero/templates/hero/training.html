@@ -71,7 +71,6 @@
     }
 
     function addResponse(responseText) {
-        console.log(g_hackindex)
         g_curRandId = Math.random()
         document.getElementById("response-"+g_hackindex).innerHTML =
             `<div class="row">
@@ -106,6 +105,49 @@
             </div>
             <button type="button" class="btn btn-primary" 
             onclick=acceptEntity("${msg}")>Continue</button> `;
+    }
+
+    function addIntentOptions(msg, intents) {
+        document.getElementById(`selectEntity-${g_hackindex}`).innerHTML =
+        `<label>Select Intents</label>
+            <div class="form-group">
+                <select id="thehackest" name="intents">`
+
+
+        for(var i in intents) {
+            document.getElementById("thehackest").innerHTML += `<option value="${i}">${i}</option>`;
+        }
+
+        document.getElementById("selectEntity-"+g_hackindex).innerHTML += `
+            </select>
+            </div>
+            <button type="button" class="btn btn-primary" 
+            onclick=acceptIntent("${$('select[name=intents]').val()}","${msg}")>Select this intent</button> 
+            <button type="button" class="btn btn-primary" 
+            onclick=addNewIntent("${msg}")>Add New Intent</button> `;
+    }
+
+    function rejectIntent(intentText, msg) {
+        $.ajax({
+            type: 'POST',
+            url: "http://127.0.0.1:8888/admin/api/reject-intent/",
+            data:  JSON.stringify({
+                "intent_name": intentText,
+                "bot_name": "{{bot.name}}",
+                "threadId": g_threadId,
+                "msg": msg
+            }),
+            success: function(data, status){
+                console.log(data);
+                $(`#firstIntent-${g_hackindex}`).css('text-decoration', 'line-through');
+                $(`#acceptIntentButton-${g_hackindex}`).hide();
+                $(`#rejectIntentButton-${g_hackindex}`).hide();
+                addIntentOptions(msg, data.intents)
+            },
+            error: function(){
+                console.log('error')
+            }
+        });
     }
 
     function acceptIntent(intentText, msg) {
@@ -169,9 +211,9 @@
                         </div>
                         <div class="form-group">
                             <label>precision = ${intent.precision}</label>
-                            <input class="form-control" type="text" value="${intent.text}">
-                            <button type="button" class="btn btn-primary" onclick=acceptIntent("${intent.text}","${String(msg)}")>Accept</button>
-                            <button class="btn btn-danger">Reject</button>
+                            <input id="firstIntent-${g_hackindex}" class="form-control" type="text" value="${intent.text}">
+                            <button id="acceptIntentButton-${g_hackindex}" type="button" class="btn btn-primary" onclick=acceptIntent("${intent.text}","${String(msg)}")>Accept</button>
+                            <button id="rejectIntentButton-${g_hackindex}" type="button" class="btn btn-danger" onclick=rejectIntent("${intent.text}","${String(msg)}")>Reject</button>
                         </div>
                     </form>
                     <div id="selectEntity-${g_hackindex}"></div>

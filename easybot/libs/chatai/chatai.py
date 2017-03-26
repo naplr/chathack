@@ -24,8 +24,8 @@ class ChatAi:
         '''
         return self.client.get_entity(msg, entity_name, mock)
 
-    def create_intent(self, intent_name):
-        return self.client.create_intent(intent_name)
+    def create_intent(self, intent_name, examples=[]):
+        return self.client.create_intent(intent_name, examples)
 
     def create_entity(self, entity_name):
         return self.client.create_entity(entity_name)
